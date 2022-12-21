@@ -16,3 +16,5 @@ LazyData: true
 Imports: 
     magrittr,
     readxl
+URL: https://github.com/the-Hull/remis
+BugReports: https://github.com/the-Hull/remis/issues
