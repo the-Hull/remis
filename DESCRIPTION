@@ -1,0 +1,18 @@
+Package: remis
+Title: Extract and format Common reporting format (CRF) tables from UNFCCC
+Version: 0.0.0.9000
+Authors@R: 
+    person("Alexander", "Hurley", , "agl.hurley@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9641-2805"))
+Description: Functions for extracting and formatting CRF tables from national inventory
+    reporting. The functions assume a set of CRF tables are located in a single folder.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Imports: 
+    magrittr,
+    readxl
