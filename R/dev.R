@@ -64,12 +64,7 @@ flatten_dims <- function(x, depth = 1, simplify = TRUE){
   info[,'id'] <- x[['id']]
   info[,1+depth] <- x[['name']]
 
-
-
   if('children' %in% names(x)){
-
-
-
 
     for(i in seq_along(x[['children']])){
       child <- x[['children']][[i]]
@@ -84,6 +79,7 @@ flatten_dims <- function(x, depth = 1, simplify = TRUE){
   }
   return(info)
 }
+
 
 
 
@@ -126,7 +122,15 @@ dimclass_pretty <- jsonlite::fromJSON(dimclass$parse())
 dimgas <- reqer$get(meta$api_gas)
 dimgas_pretty <- jsonlite::fromJSON(dimgas$parse())
 
+test <- flatten_dims(dimcat_pretty$cad)
 
+column <- apply(test, MARGIN = 1, function(x) max(which(!is.na(x))))
+test$name <- sapply(seq_len(length(column)),
+                    function(idx){
+
+                      test[idx,column[idx]]
+
+})
 
 purrr::map_df(dimmeasure_pretty, list_dims, .id = 'Category')
 purrr::map_df(dimcat_pretty, list_dims, .id = 'Category')
