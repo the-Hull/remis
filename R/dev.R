@@ -101,14 +101,18 @@ meta <- list(
   api_measures = "api/dimension-instances/measure",
   api_gas = "api/dimension-instances/gas",
   # variable collection?
-    api_variables = "variables/fq/"
+    api_variables = "api/variables/fq/annexOne"
   )
 library(crul)
 reqer <- crul::HttpClient$new(meta$api_base_url)
+
 parties <- reqer$get(meta$api_parties_url)
 parties_pretty <- jsonlite::fromJSON(parties$parse())
 
+vars <- reqer$get(meta$api_variables)
+vars_pretty <- jsonlite::fromJSON(vars$parse())
 
+api_variables
 dimcat <- reqer$get(meta$api_categories)
 dimcat_pretty <- jsonlite::fromJSON(dimcat$parse())
 
