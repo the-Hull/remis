@@ -17,27 +17,73 @@ list_dims <- function(x, simplify = TRUE){
 
 
 
-flatten_dims <- function(x, parent = list(), simplify = TRUE){
-  # dict <- list()
-  dict <- parent
-  dict[x[['name']]] <- x[['id']]
-  if('children' %in% names(x)){
-    # if(!is.null(x['children'])){
-    print("found children")
-    for(i in seq_along(x[['children']])){
-      length(x['children'])
-      child <- x[['children']][[i]]
-      # dict[child[['name']] <- child[['id']]
-      dict <- c(dict, flatten_dims(child))
-    }
-  }
-  return(dict)
+# flatten_dims <- function(x, parent = list(), simplify = TRUE){
+#   dict <- parent
+#   dict[x[['name']]] <- x[['id']]
+#
+#   if('children' %in% names(x)){
+#
+#     print("found children")
+#
+#
+#
+#     for(i in seq_along(x[['children']])){
+#       length(x['children'])
+#       child <- x[['children']][[i]]
+#       dict <- c(dict, flatten_dims(child))
+#     }
+#   }
+#   return(dict)
+# }
+
+make_iddf <- function(nrow, depth){
+
+  out <- tibble::as_tibble(
+    matrix(data = NA_character_,
+           nrow = nrow,
+           ncol = 1 + depth,
+           byrow = TRUE),
+    .name_repair = 'minimal')
+  cn <- c('id', paste0("level_", seq_len(depth)))
+
+  colnames(out) <- cn
+  out <- mutate(out, id = as.integer(id))
+  return(out)
+
 }
 
 
+flatten_dims <- function(x, depth = 1, simplify = TRUE){
+
+  nr <- length(x[['id']])
+
+
+  info <- make_iddf(depth = depth, nrow = nr)
+
+
+  info[,'id'] <- x[['id']]
+  info[,1+depth] <- x[['name']]
 
 
 
+  if('children' %in% names(x)){
+
+
+
+
+    for(i in seq_along(x[['children']])){
+      child <- x[['children']][[i]]
+
+      new <- flatten_dims(x = child, depth = depth + 1)
+
+      # carry the parent name
+      new[,depth + 1] <- x[['name']][i]
+      info <- dplyr::bind_rows(info, new)
+
+    }
+  }
+  return(info)
+}
 
 
 
@@ -55,9 +101,9 @@ meta <- list(
     api_unit = "conversion/fq",
   # collect variables for query here
     api_categories = "api/dimension-instances/category",
-  api_classification = "dimension-instances/classification",
+  api_classification = "api/dimension-instances/classification",
   api_measures = "api/dimension-instances/measure",
-  api_gas = "dimension-instances/gas",
+  api_gas = "api/dimension-instances/gas",
   # variable collection?
     api_variables = "variables/fq/"
   )
@@ -73,6 +119,13 @@ dimcat_pretty <- jsonlite::fromJSON(dimcat$parse())
 
 dimmeasure <- reqer$get(meta$api_measures)
 dimmeasure_pretty <- jsonlite::fromJSON(dimmeasure$parse())
+
+dimclass <- reqer$get(meta$api_classification)
+dimclass_pretty <- jsonlite::fromJSON(dimclass$parse())
+
+dimgas <- reqer$get(meta$api_gas)
+dimgas_pretty <- jsonlite::fromJSON(dimgas$parse())
+
 
 
 purrr::map_df(dimmeasure_pretty, list_dims, .id = 'Category')
