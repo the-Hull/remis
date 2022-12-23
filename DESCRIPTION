@@ -18,7 +18,6 @@ Imports:
     dplyr,
     jsonlite,
     magrittr,
-    readxl,
     tidyr
 URL: https://github.com/the-Hull/remis
 BugReports: https://github.com/the-Hull/remis/issues
