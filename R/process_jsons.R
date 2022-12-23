@@ -12,7 +12,6 @@
 flatten_json <- function(x){
   # identify nested column
   nested_cols <- colnames(x)[sapply(x, is.list)]
-  print(nested_cols)
   flattened <- tidyr::unnest(x, cols = tidyselect::all_of(nested_cols), names_sep = "_", names_repair = "unique")
   return(flattened)
 }
@@ -43,7 +42,7 @@ flatten_dims <- function(x, depth = 1){
   nr <- length(x[['id']])
 
 
-  info <- make_iddf(depth = depth, nrow = nr)
+  info <- make_idtbl(depth = depth, nrow = nr)
 
 
   info[,'id'] <- x[['id']]
@@ -89,7 +88,7 @@ make_idtbl <- function(nrow, depth){
   cn <- c('id', paste0("level_", seq_len(depth)))
 
   colnames(out) <- cn
-  out <- mutate(out, id = as.integer(id))
+  out <- dplyr::mutate(out, id = as.integer(id))
   return(out)
 
 }

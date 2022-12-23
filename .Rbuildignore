@@ -8,5 +8,8 @@
 ^data-raw$
 ^LICENSE\.md$
 ^remis\.Rcheck$
+^R\dev.R$
 ^remis.*\.tar\.gz$
 ^remis.*\.tgz$
+^\./R/dev\.R$
+^R/dev\.R$
