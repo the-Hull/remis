@@ -78,7 +78,6 @@ flatten_dims <- function(x, depth = 1){
 #' @return tibble with columns `id`, `level_x`, with x reflecting the nestedness,
 #' and `name`. `id` is the DI API id, values in `level_x` are the corresponding name
 #' for the id, or its parent, and name is the id's name.
-#' @export
 make_idtbl <- function(nrow, depth){
 
   out <- tibble::as_tibble(
@@ -93,4 +92,26 @@ make_idtbl <- function(nrow, depth){
   out <- mutate(out, id = as.integer(id))
   return(out)
 
+}
+
+
+#' Add 'name' column to unnested tables
+#'
+#' @param x data.frame/tibble with `level_x` columns from unnesting
+#'
+#' @return x with additional column `name`, or if nesting is only one level deep
+#'  (i.e., `level_1`), the column is renamed
+add_name_column <- function(x){
+
+  if(ncol(x) == 2 & colnames(x)[2] == 'level_1'){
+    names(x)[2] <- 'name'
+    return(x)
+  } else {
+  column <- apply(x, MARGIN = 1, function(z) max(which(!is.na(z))))
+  x$name <- vapply(seq_len(length(column)),
+                      function(idx){
+                        x[idx,column[idx], drop = TRUE]
+                      }, FUN.VALUE = character(1))
+  }
+  return(x)
 }
