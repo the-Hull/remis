@@ -108,23 +108,34 @@ reqer <- crul::HttpClient$new(meta$api_base_url)
 
 parties <- reqer$get(meta$api_parties_url)
 parties_pretty <- jsonlite::fromJSON(parties$parse())
+flatten_json(parties_pretty)
 
 vars <- reqer$get(meta$api_variables)
 vars_pretty <- jsonlite::fromJSON(vars$parse())
+flatten_json(vars_pretty)
 
-api_variables
 dimcat <- reqer$get(meta$api_categories)
 dimcat_pretty <- jsonlite::fromJSON(dimcat$parse())
+flatten_dims(dimcat_pretty$extData)
+flatten_dims(dimcat_pretty$nonAnnexOne)
+flatten_dims(dimcat_pretty$cad)
+
+dimclass <- reqer$get(meta$api_classification)
+dimclass_pretty <- jsonlite::fromJSON(dimclass$parse())
+flatten_dims(dimclass_pretty$annexOne)
 
 
 dimmeasure <- reqer$get(meta$api_measures)
 dimmeasure_pretty <- jsonlite::fromJSON(dimmeasure$parse())
+flatten_dims(dimmeasure_pretty$annexOne)
 
-dimclass <- reqer$get(meta$api_classification)
-dimclass_pretty <- jsonlite::fromJSON(dimclass$parse())
+
+
 
 dimgas <- reqer$get(meta$api_gas)
 dimgas_pretty <- jsonlite::fromJSON(dimgas$parse())
+flatten_dims(dimgas_pretty$annexOne)
+
 
 test <- flatten_dims(dimcat_pretty$cad)
 
