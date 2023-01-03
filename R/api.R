@@ -173,23 +173,28 @@ select_varid <- function(
 #' @param id integer
 #'
 #' @return character, name corresponding to id
-find_id <- function(x, id){
+find_id <- function(x, id, verbose = FALSE){
 
+  nms <- c()
 
-
+  # recurse through list and keep track of nesting
   while(!inherits(x, 'integer')){
 
     nm <- names(x)[grepl(id, x)][1]
+    nms <- c(nms, nm)
     if(nm == 'id'){
       y <- x
     }
     x <- x[[nm]]
-    print(nm)
-
   }
 
+  # subset 'name' column using id
   idl <- x == id
   nm_id <- y[['name']][idl]
+
+  if(verbose){
+    cat(paste(nms, collapse = " - "), sep = '\n')
+  }
 
   return(nm_id)
 
