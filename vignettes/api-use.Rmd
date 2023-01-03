@@ -14,9 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-`remis` uses the UNFCCC Data Interface Flexible Query API.
-Data downloads via queries require a variable for a specific party and year, which are
-referred to via unique `id`'s.
+`remis` uses the UNFCCC Data Interface Flexible Query API to download Inventory Data.
+At a later stage, functions for downloading Compilation and Accounting Data (`cad` and `cadCP2`) will be included.  
+Data downloads via queries require a variable for a specific party and year, which are referred to via unique `id`'s.
 While party and year `id`'s are linked to respective data in a fairly straight-forward manner (e.g., single country or year), variable ids are unique descriptors for a combination of data sources consisting of:
 
 - category
@@ -49,7 +49,7 @@ cat(paste0('- ', names(rem$categories[1:3]), collapse = '\n'))
 
 ```
 
-Queries for data within `r paste(names(rem$categories[4:5]), collapse = 'and')` will be available in future versions.
+Queries for data within `r paste(names(rem$categories[4:5]), collapse = ' and ')` will be available in future versions.
 
 
 Further details on the objects within `rem` are:
@@ -67,7 +67,21 @@ cat(
 
 
 
+## Building up Flexible Queries
 
+Details on the Flexible Query API can be found in the official documentation of the [Data Interface for UNFCCC](https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/data-interface-help#Flexible-Queries-).    
+
+Define whether annexOne or nonAnnexOne data shall be downloaded, and then:
+
+1. Select party
+2. Select year
+3. Choose variable based on `ccmgu`'s
+
+Note, that objects in `rem` (excluding `parties`) provide all data sources (where applicable) reflected in the list items `r names(rem$categories)`.
+
+### Parties
+
+Parties are stored in `rem$parties`
 
 ```{r parties, message=FALSE}
 
@@ -75,30 +89,79 @@ library(dplyr)
 # up to 5th entry on parties
 knitr::kable(rem$parties %>% 
                dplyr::group_by(name) %>% 
-               dplyr::slice(1:5))
+               dplyr::slice(1:3))
+
+```
+
+### Years
+
+
+Years are stored in `rem$years` for respective 
+
+```{r years, message=FALSE}
+
+knitr::kable(names(rem$years))
+knitr::kable(rem$years$annexOne)
 
 ```
 
 
-```{r categories}
+### Variables
 
-library(dplyr)
-# up to 5th entry on parties
-# knitr::kable(rem$categories %>% 
-#                dplyr::group_by(name) %>% 
-#                dplyr::slice(1:5))
-
-```
-  
-
-```{r check-meta}
-
-```
-
+- select directly from variable table
+- or choose one `ccmgu` and find corresponding variables
 
 ```{r downloading}
 # set up API object
 
 
 ```
+
+Sections below give a brief overview on `ccmgu`'s.
+
+#### Categories
+
+Categories are UNFCCC CRF-Categories or categories under the Compilation and Accounting Data.
+The tables for each category have an `id` and a `name` column.
+Where nested sub-categories exist, additional columns using the name `level_x` (`x` = nesting depth) show the category hierarchy.
+
+
+```{r categories}
+
+knitr::kable(names(rem$categories))
+# up to 5th entry on parties
+knitr::kable(dplyr::slice(rem$categories$annexOne, 1:10))
+knitr::kable(dplyr::slice(rem$categories$annexOne, 88:94))
+
+```
+  
+#### Classification
+
+Classification differ based on respective sectors and/or CRF-Categories:
+
+- Energy: 
+  + Fuel Types
+- Agriculture:
+  + Livestock types
+- LULUCF/LUCF:
+  + LULUCF/LUCF activities
+  
+```{r classification}
+
+knitr::kable(head(rem$classification$annexOne, 10))
+
+```
+
+#### Measures
+
+Measures include: 
+
+
+```{r measures}
+
+
+knitr::kable(head(rem$measures$annexOne, 10))
+
+```
+
 

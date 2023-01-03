@@ -15,9 +15,10 @@ meta <- list(
   measures = "api/dimension-instances/measure",
   gas = "api/dimension-instances/gas",
   # variable collection?
-  variables_annexone = "api/variables/fq/annexOne",
   # units
-  units = "api/conversion/fq"
+  units = "api/conversion/fq",
+  variables = list(annexOne = "api/variables/fq/annexOne",
+                   nonAnnexOne = "api/variables/fq/nonAnnexOne")
 )
 
 
@@ -39,8 +40,17 @@ rem_init <- function(base_url = meta$api_base_url){
   responses <- lapply(meta[!grepl('base', names(meta))],
 
                       function(u){
-                        cat(sprintf('parsing %s\n', u))
-                        req_parse(x = req, url = u)
+                        if(class(u) == 'character'){
+                          cat(sprintf('parsing %s\n', u))
+                          req_parse(x = req, url = u)
+                        } else if(class(u) == 'list'){
+
+                          lapply(u, function(v){
+                          cat(sprintf('parsing %s\n', v))
+                          req_parse(x = req, url = v)
+                          })
+
+                        }
                       })
 
 
@@ -105,7 +115,7 @@ req_parse <- function(x, url){
 #'
 #' @return data.frame with same dims of `vars` if no ids are supplied, or with rows
 #' resulting from union of ids, and columns of `vars`
-select_vars <- function(
+select_varid <- function(
     vars,
     category_id = NULL,
     classification_id = NULL,
@@ -157,5 +167,32 @@ select_vars <- function(
 }
 
 
+#' Search through UNFCCC Ids
+#'
+#' @param x object from `rem_init()`
+#' @param id integer
+#'
+#' @return character, name corresponding to id
+find_id <- function(x, id){
+
+
+
+  while(!inherits(x, 'integer')){
+
+    nm <- names(x)[grepl(id, x)][1]
+    if(nm == 'id'){
+      y <- x
+    }
+    x <- x[[nm]]
+    print(nm)
+
+  }
+
+  idl <- x == id
+  nm_id <- y[['name']][idl]
+
+  return(nm_id)
+
+}
 
 
