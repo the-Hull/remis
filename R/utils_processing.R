@@ -149,18 +149,6 @@ get_crf_level <- function(x){
 
 }
 
-#' Extract meta based on Table name
-#'
-#' @param tablename
-#'
-#' @return
-#' @export
-#'
-#' @examples
-# get_meta <- function(tablename){
-# ....
-# }
-
 
 # # data I/O --------------------------------------------------------------
 

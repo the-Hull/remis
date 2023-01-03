@@ -81,7 +81,6 @@ rem_init <- function(base_url = meta$api_base_url){
 #'
 #' @return list, parsed from json
 #'
-#' @examples
 req_parse <- function(x, url){
 
   obj <- x$get(url)
@@ -95,10 +94,10 @@ req_parse <- function(x, url){
 #' Variable selector
 #'
 #' Select variables based on categories, classifications, measures and gasses using
-#' ids. Variable selection is based on the union of all supplied ids, non intersection.
+#' ids. Variable selection is based on the union of all supplied ids, non-intersecting.
 #' If no ids are supplied, all variables are returned.
 #'
-#' @param vars data.frame of variable ids with corresponding ccmg ids
+#' @param vars data.frame of variable ids with corresponding cat/class/meas/gas ids
 #' @param category_id integer
 #' @param classification_id integer
 #' @param measure_id integer
@@ -146,10 +145,6 @@ select_vars <- function(
                       return(category_mask)
                     }
     )
-
-
-    # loop over list and check if values found in vars table
-
 
     masks <- do.call(cbind, masks)
 

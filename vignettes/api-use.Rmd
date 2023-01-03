@@ -1,0 +1,104 @@
+---
+title: "Interacting with the UNFCCC API using remis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Interacting with the UNFCCC API using remis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`remis` uses the UNFCCC Data Interface Flexible Query API.
+Data downloads via queries require a variable for a specific party and year, which are
+referred to via unique `id`'s.
+While party and year `id`'s are linked to respective data in a fairly straight-forward manner (e.g., single country or year), variable ids are unique descriptors for a combination of data sources consisting of:
+
+- category
+- classification
+- measurement
+- gas
+- unit
+
+The above are referred to as *ccmgu*'s.
+
+Initializing `remis` with `rem_init` provides a list with several objects to inspect available data and query for it.
+These include `id` overviews for parties, years, *ccmgu*'s, as well as respective 
+variable tables and the query object for requests `.req`.
+
+
+```{r setup, meassage = FALSE}
+library(remis)
+
+rem <- rem_init()
+
+names(rem)
+```
+
+Note that only calls using the Flexible Query API are currently implemented. 
+These allow interacting with data sources from:
+
+```{r results='asis', echo=FALSE}
+
+cat(paste0('- ', names(rem$categories[1:3]), collapse = '\n'))
+
+```
+
+Queries for data within `r paste(names(rem$categories[4:5]), collapse = 'and')` will be available in future versions.
+
+
+Further details on the objects within `rem` are:
+
+```{r results='asis', echo=FALSE}
+cat(
+  paste0('- **',
+         names(rem),
+         '** - class: ',
+         unlist(sapply(rem, function(x) paste(class(x), collapse = ', '))),
+         collapse = '\n')
+  )
+
+```
+
+
+
+
+
+```{r parties, message=FALSE}
+
+library(dplyr)
+# up to 5th entry on parties
+knitr::kable(rem$parties %>% 
+               dplyr::group_by(name) %>% 
+               dplyr::slice(1:5))
+
+```
+
+
+```{r categories}
+
+library(dplyr)
+# up to 5th entry on parties
+# knitr::kable(rem$categories %>% 
+#                dplyr::group_by(name) %>% 
+#                dplyr::slice(1:5))
+
+```
+  
+
+```{r check-meta}
+
+```
+
+
+```{r downloading}
+# set up API object
+
+
+```
+
