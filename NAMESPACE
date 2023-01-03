@@ -3,5 +3,6 @@
 export("%>%")
 export(flatten_dims)
 export(flatten_json)
+export(get_names)
 export(rem_init)
 importFrom(magrittr,"%>%")

@@ -42,12 +42,12 @@ rem_init <- function(base_url = meta$api_base_url){
                       function(u){
                         if(class(u) == 'character'){
                           cat(sprintf('parsing %s\n', u))
-                          req_parse(x = req, url = u)
+                          get_parse(x = req, url = u)
                         } else if(class(u) == 'list'){
 
                           lapply(u, function(v){
                           cat(sprintf('parsing %s\n', v))
-                          req_parse(x = req, url = v)
+                          get_parse(x = req, url = v)
                           })
 
                         }
@@ -56,6 +56,10 @@ rem_init <- function(base_url = meta$api_base_url){
 
   # pre-process parties
   responses$parties <- flatten_json(responses$parties)
+  ## clean names
+  names(responses$parties)[names(responses$parties) == 'parties_id'] <- 'id'
+  names(responses$parties)[names(responses$parties) == 'name'] <- 'name_code'
+  names(responses$parties)[names(responses$parties) == 'parties_name'] <- 'name'
 
   # pre-process nested values
   nested_obs <- c('categories', 'classification', 'measures')
@@ -84,19 +88,108 @@ rem_init <- function(base_url = meta$api_base_url){
 
 # helpers -----------------------------------------------------------------
 
-#' Get and parse objects
+#' GET and parse objects
 #'
 #' @param x response from
 #' @param url character, api path for desired object
 #'
 #' @return list, parsed from json
 #'
-req_parse <- function(x, url){
+get_parse <- function(x, url){
 
   obj <- x$get(url)
   obj_pretty <- jsonlite::fromJSON(obj$parse(encoding = 'UTF-8'))
 
   return(obj_pretty)
+
+}
+
+
+#' POST and parse objects
+#'
+#' @param x list, remis object
+#' @param url character, api path for flex query
+#'
+#' @return data.frame, parsed from json
+#'
+post_parse <- function(x, url = 'api/records/flexible-queries/', query){
+
+  # check if query is empty warn for large (!) download
+
+  # replace all ids with existing ones?
+
+
+  obj <- x$.req$post(
+    path = url,
+    body = query,
+    encode = 'json'
+    )
+
+  # check if response is 200 or fail
+
+
+  obj_pretty <- jsonlite::fromJSON(obj$parse(encoding = 'UTF-8'))
+
+  return(obj_pretty)
+
+}
+
+#' Readable query results
+#'
+#' This function combines numeric/character responses from queries with their
+#' respective id values from parties, years and variables.
+#'
+#' @param raw list, response from POST request
+#' @param rms list, `remis` object
+#'
+#' @return data.frame
+parse_raw <- function(raw, rms){
+
+
+  nr <- nrow(raw)
+
+  pts <- character(nr)
+  yrs <- character(nr)
+
+  # get parties
+  parties <- get_names(raw$partyId, rms$parties)
+
+  # get years
+  years <- get_names(raw$yearId, rms$years)
+
+
+  ## variables
+  variables <- get_variables(raw$variable, rms)
+
+
+
+
+
+
+
+
+  # id_cols <- c('partyId', 'yearId')
+  #
+  # rows <- vector('list', nrow(raw))
+  #
+  #
+  # for(idx in seq_len(nrow(raw))){
+  #
+  #   rows[idx] <- list(sapply(raw[idx, id_cols],
+  #          function(x) find_id(rms, id = x, verbose = FALSE))
+  #   )
+  #
+  #
+  # }
+  #
+  # return(rows)
+
+  out <- cbind(
+    data.frame(parties = parties, years = years),
+    variables,
+    data.frame(number_value = res[['numberValue']], string_value = res[['stringValue']]))
+
+  return(out)
 
 }
 
@@ -174,6 +267,7 @@ select_varid <- function(
 #'
 #' @return character, name corresponding to id
 find_id <- function(x, id, verbose = FALSE){
+  # ensure that match is only length one
 
   nms <- c()
 
@@ -200,4 +294,106 @@ find_id <- function(x, id, verbose = FALSE){
 
 }
 
+
+
+#' Title
+#'
+#' @param ids
+#' @param rms list, lower-level item from `remis` object
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_names <- function(ids, rms){
+
+
+  un_id <- unique(ids)
+  for(idx in seq_along(un_id)){
+
+    names(un_id)[idx] <- find_id(rms, un_id[idx])
+  }
+
+  nms <- character(length(ids))
+
+  for(idx in seq_along(ids)){
+
+    nms[idx] <- names(un_id)[ids[idx] == un_id]
+  }
+
+  return(nms)
+}
+
+#' Extract ccmgu information based on variableId
+#'
+#' @param ids integer, variableId
+#' @param rms list, `remis` object
+#'
+#' @return data.frame containing integer variableId and text description of each
+#' corresponding ccmug id
+get_variables <- function(ids, rms){
+
+  un_id <- unique(ids)
+  categories <- vector('character', length(un_id))
+  classification <- vector('character', length(un_id))
+  measures <- vector('character', length(un_id))
+  gas <- vector('character', length(un_id))
+  unit <- vector('character', length(un_id))
+
+  for(idx in seq_along(un_id)){
+
+    aon <- names(rms$variables)[grepl(un_id[idx], rms$variables)]
+
+    # get variable row
+    row_lgl <- rms$variables[[aon]][['variableId']] == un_id[idx]
+    row <- rms$variables[[aon]][row_lgl, ]
+
+
+    categories[idx] <- find_id(rms$categories, row$categoryId)
+    classification[idx] <- find_id(rms$classification, row$classificationId)
+    measures[idx] <- find_id(rms$measures, row$measureId)
+    gas[idx] <- find_id(rms$gas, row$gasId)
+    unit[idx] <- find_id(rms$units$units, row$unitId)
+
+  }
+
+
+  lookup <-
+    data.frame(
+      variable_id = un_id,
+      reporting = aon,
+      category = categories,
+      classification = classification,
+      measure = measures,
+      gas = gas,
+      unit = unit
+    )
+
+  variables <- vector('list', length(ids))
+
+
+
+  for(idx in seq_along(ids)){
+
+    variables[idx] <- list(lookup[ids[idx] == lookup[['variable_id']], ])
+
+  }
+
+  variables <- do.call(rbind, variables)
+
+
+
+
+  return(variables)
+
+}
+
+
+
+
+
+
+# TODO: -------------
+## remis_check() ...-------------
+# ensure that objects have suitable remis format
 
