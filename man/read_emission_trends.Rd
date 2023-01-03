@@ -4,7 +4,7 @@
 \alias{read_emission_trends}
 \title{Extract trend data from CRF Table}
 \usage{
-read_emission_trends(path, table = "Table10s1")
+read_emission_trends(path, table = "Table10s1", total = FALSE)
 }
 \arguments{
 \item{path}{character, single file path to CRF table.}
