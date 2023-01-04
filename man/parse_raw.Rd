@@ -4,12 +4,12 @@
 \alias{parse_raw}
 \title{Readable query results}
 \usage{
-parse_raw(raw, rms)
+parse_raw(rms, raw)
 }
 \arguments{
-\item{raw}{list, response from POST request}
-
 \item{rms}{list, \code{remis} object}
+
+\item{raw}{list, response from POST request}
 }
 \value{
 data.frame

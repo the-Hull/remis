@@ -42,12 +42,12 @@ rem_init <- function(base_url = meta$api_base_url){
                       function(u){
                         if(class(u) == 'character'){
                           cat(sprintf('parsing %s\n', u))
-                          get_parse(x = req, url = u)
+                          get_parse(rms = req, url = u)
                         } else if(class(u) == 'list'){
 
                           lapply(u, function(v){
                           cat(sprintf('parsing %s\n', v))
-                          get_parse(x = req, url = v)
+                          get_parse(rms = req, url = v)
                           })
 
                         }
@@ -86,18 +86,59 @@ rem_init <- function(base_url = meta$api_base_url){
 }
 
 
+
+
+#' Query UNFCCC DI with Flex Query API
+#'
+#' @param rms list, object form `rem_init()`
+#' @param variable_ids integer, ids of interest
+#' @param party_ids integer, ids of interest
+#' @param year_ids integer, ids of interest
+#' @param path character, default is 'api/records/flexible-queries/'
+#' @param pretty logical, should raw results transformed to feature text
+#' descriptions instead of ids?
+#'
+#' @return data.frame
+#' @export
+flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/records/flexible-queries/', pretty = TRUE){
+
+  # check if any are null.. download all?
+  # warn for large dl and ask to proceed with input y/n
+  # add `warn_large` argument as flag, set to FALSE for headless systems
+
+  body <- list(
+    variableIds = as.list(variable_ids),
+    partyIds = as.list(party_ids),
+    yearIds = as.list(year_ids)
+    )
+
+
+  result <- post_parse(rms = rms, path = path, body = body, pretty = pretty)
+
+  if(is.list(result) & length(result) == 0){
+    cat('No data submitted for any of the variables.')
+    return(NULL)
+  }
+
+
+  return(result)
+
+}
+
+
+
 # helpers -----------------------------------------------------------------
 
 #' GET and parse objects
 #'
-#' @param x response from
+#' @param rms response from
 #' @param url character, api path for desired object
 #'
 #' @return list, parsed from json
 #'
-get_parse <- function(x, url){
+get_parse <- function(rms, url){
 
-  obj <- x$get(url)
+  obj <- rms$get(url)
   obj_pretty <- jsonlite::fromJSON(obj$parse(encoding = 'UTF-8'))
 
   return(obj_pretty)
@@ -105,33 +146,44 @@ get_parse <- function(x, url){
 }
 
 
+
+
+
 #' POST and parse objects
 #'
-#' @param x list, remis object
-#' @param url character, api path for flex query
+#' @param rms list, remis object
+#' @param path character
+#' @param body list containing parties, years, variables
+#' @param parse logical, should raw results transformed to feature text
+#' descriptions instead of ids?
 #'
 #' @return data.frame, parsed from json
 #'
-post_parse <- function(x, url = 'api/records/flexible-queries/', query){
+post_parse <- function(rms, path = 'api/records/flexible-queries/', body, pretty = TRUE){
 
   # check if query is empty warn for large (!) download
 
   # replace all ids with existing ones?
 
 
-  obj <- x$.req$post(
-    path = url,
-    body = query,
+  obj <- rms$.req$post(
+    path = path,
+    body = body,
     encode = 'json'
     )
 
   # check if response is 200 or fail
+  if(obj$status_code != 200){
+    stop(sprintf("POST query failed with status %d", obj$status_code))
+  }
 
+  obj <- jsonlite::fromJSON(obj$parse(encoding = 'UTF-8'))
 
-  obj_pretty <- jsonlite::fromJSON(obj$parse(encoding = 'UTF-8'))
+    if(pretty){
+    obj <- parse_raw(rms, obj)
+  }
 
-  return(obj_pretty)
-
+  return(obj)
 }
 
 #' Readable query results
@@ -139,58 +191,25 @@ post_parse <- function(x, url = 'api/records/flexible-queries/', query){
 #' This function combines numeric/character responses from queries with their
 #' respective id values from parties, years and variables.
 #'
-#' @param raw list, response from POST request
 #' @param rms list, `remis` object
+#' @param raw list, response from POST request
 #'
 #' @return data.frame
-parse_raw <- function(raw, rms){
-
-
-  nr <- nrow(raw)
-
-  pts <- character(nr)
-  yrs <- character(nr)
+parse_raw <- function(rms, raw){
 
   # get parties
-  parties <- get_names(raw$partyId, rms$parties)
-
+  parties <- get_names(rms$parties, raw$partyId)
   # get years
-  years <- get_names(raw$yearId, rms$years)
-
-
-  ## variables
-  variables <- get_variables(raw$variable, rms)
-
-
-
-
-
-
-
-
-  # id_cols <- c('partyId', 'yearId')
-  #
-  # rows <- vector('list', nrow(raw))
-  #
-  #
-  # for(idx in seq_len(nrow(raw))){
-  #
-  #   rows[idx] <- list(sapply(raw[idx, id_cols],
-  #          function(x) find_id(rms, id = x, verbose = FALSE))
-  #   )
-  #
-  #
-  # }
-  #
-  # return(rows)
+  years <- get_names(rms$years, raw$yearId)
+  # get text variables
+  variables <- get_variables(rms, raw$variable)
 
   out <- cbind(
     data.frame(parties = parties, years = years),
     variables,
-    data.frame(number_value = res[['numberValue']], string_value = res[['stringValue']]))
+    data.frame(number_value = raw[['numberValue']], string_value = raw[['stringValue']]))
 
   return(out)
-
 }
 
 
@@ -205,6 +224,8 @@ parse_raw <- function(raw, rms){
 #' @param classification_id integer
 #' @param measure_id integer
 #' @param gas_id integer
+#'
+#' @export
 #'
 #' @return data.frame with same dims of `vars` if no ids are supplied, or with rows
 #' resulting from union of ids, and columns of `vars`
@@ -262,28 +283,28 @@ select_varid <- function(
 
 #' Search through UNFCCC Ids
 #'
-#' @param x object from `rem_init()`
+#' @param rms object from `rem_init()`
 #' @param id integer
 #'
 #' @return character, name corresponding to id
-find_id <- function(x, id, verbose = FALSE){
+find_id <- function(rms, id, verbose = FALSE){
   # ensure that match is only length one
 
   nms <- c()
 
   # recurse through list and keep track of nesting
-  while(!inherits(x, 'integer')){
+  while(!inherits(rms, 'integer')){
 
-    nm <- names(x)[grepl(id, x)][1]
+    nm <- names(rms)[grepl(id, rms)][1]
     nms <- c(nms, nm)
     if(nm == 'id'){
-      y <- x
+      y <- rms
     }
-    x <- x[[nm]]
+    rms <- rms[[nm]]
   }
 
   # subset 'name' column using id
-  idl <- x == id
+  idl <- rms == id
   nm_id <- y[['name']][idl]
 
   if(verbose){
@@ -296,16 +317,16 @@ find_id <- function(x, id, verbose = FALSE){
 
 
 
-#' Title
+#' Get name based on id
 #'
+#' @param rms list, lower-level item from `remis` object, like `..$parties`
 #' @param ids
-#' @param rms list, lower-level item from `remis` object
 #'
-#' @return
+#' @return character, names corresponding to `ids`
 #' @export
 #'
 #' @examples
-get_names <- function(ids, rms){
+get_names <- function(rms, ids){
 
 
   un_id <- unique(ids)
@@ -326,12 +347,14 @@ get_names <- function(ids, rms){
 
 #' Extract ccmgu information based on variableId
 #'
-#' @param ids integer, variableId
 #' @param rms list, `remis` object
+#' @param ids integer, variableId
+#'
+#' @export
 #'
 #' @return data.frame containing integer variableId and text description of each
 #' corresponding ccmug id
-get_variables <- function(ids, rms){
+get_variables <- function(rms, ids){
 
   un_id <- unique(ids)
   categories <- vector('character', length(un_id))
@@ -371,8 +394,6 @@ get_variables <- function(ids, rms){
 
   variables <- vector('list', length(ids))
 
-
-
   for(idx in seq_along(ids)){
 
     variables[idx] <- list(lookup[ids[idx] == lookup[['variable_id']], ])
@@ -381,13 +402,9 @@ get_variables <- function(ids, rms){
 
   variables <- do.call(rbind, variables)
 
-
-
-
-  return(variables)
+    return(variables)
 
 }
-
 
 
 
@@ -397,3 +414,4 @@ get_variables <- function(ids, rms){
 ## remis_check() ...-------------
 # ensure that objects have suitable remis format
 
+# clean_years <- function(years){}

@@ -2,13 +2,18 @@
 % Please edit documentation in R/api.R
 \name{get_names}
 \alias{get_names}
-\title{Title}
+\title{Get name based on id}
 \usage{
-get_names(ids, rms)
+get_names(rms, ids)
 }
 \arguments{
-\item{rms}{list, lower-level item from \code{remis} object}
+\item{rms}{list, lower-level item from \code{remis} object, like \code{..$parties}}
+
+\item{ids}{}
+}
+\value{
+character, names corresponding to \code{ids}
 }
 \description{
-Title
+Get name based on id
 }

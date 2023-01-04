@@ -61,7 +61,7 @@ cat(
          '** - class: ',
          unlist(sapply(rem, function(x) paste(class(x), collapse = ', '))),
          collapse = '\n')
-  )
+)
 
 ```
 
@@ -76,8 +76,113 @@ Define whether annexOne or nonAnnexOne data shall be downloaded, and then:
 1. Select party
 2. Select year
 3. Choose variable based on `ccmgu`'s
+4. Execute query
 
 Note, that objects in `rem` (excluding `parties`) provide all data sources (where applicable) reflected in the list items `r names(rem$categories)`.
+
+### Example
+
+#### **1. Select Party**
+
+Here we choose Germany and France.
+
+```{r example-party}
+
+# in RStudio: 
+# View(rem$parties)
+
+parties_mask <- rem$parties$parties_code %in% c('DEU', 'FRA')
+parties_id <- rem$parties[parties_mask, c('id', 'name', 'categoryCode')]
+knitr::kable(parties_id)
+
+```
+Note, that both parties are in Annex I.
+
+#### **2. Select years**
+
+We will select all years from 1990 to the latest inventory year (2020).
+```{r example-years}
+# base year has id = 0
+years <- rem$years$annexOne[rem$years$annexOne$id != 0, ]
+knitr::kable(years)
+
+
+```
+
+#### **3. Select from ccmug's**
+
+The selection of *ccmug*'s is possible is several ways.
+Ideally, one item of interest should be selected, such as a category or a measure, through which the appropriate variable for querying is identified.
+This can be done either by browsing in `RStudio` with `View(rem)` and using the interactive filter function, or by searching programmatically. 
+The example below shows the latter.
+
+Here, we assume an interest in missions from cars in the transportation sector by fuel type and in total in the CRF-Category *1.A.3.b.i  Cars* (id = 9279).
+Therefore, we begin with *category* as our starting point.
+
+
+```{r example-ccmug}
+
+# parties are annexOne, thus:
+
+category_mask <- grepl('1.A.3.b.i  Cars', rem$categories$annexOne$name)
+category <- rem$categories$annexOne[category_mask, ]
+knitr::kable(as.data.frame(t(category)))
+
+```
+The table above also highlights the nesting structure throughout the CRF-Category tree.
+
+Next, find appropriate variables (i.e. combination of *ccmug*'s_ that contain our category of interest.
+
+```{r example-variables}
+variables <- select_varid(
+  vars = rem$variables$annexOne,
+  category_id = category$id)
+knitr::kable(head(variables, 20))
+
+nv <- nrow(variables)
+```
+There are a total of `r nv` variable combinations that include our category of interest.
+Note that `select_varid()` also allows selections by including other `ccmugs` to be more specific.
+Let's inspect the variables in a more human-readable format:
+
+```{r example-variablestext}
+variables_text <- get_variables(
+  ids = variables$variableId,
+  rms = rem)
+knitr::kable(variables_text[order(variables_text$classification, variables_text$measure), ])
+
+```
+
+Next, we filter for the desired measure `Net emissions/removals` and gas `Aggregate GHGs`:
+
+```{r examples-variables-select}
+
+var_ids <- variables_text[variables_text$measure=="Net emissions/removals" &
+                 variables_text$gas=="Aggregate GHGs", ]
+knitr::kable(var_ids)
+
+```
+
+All relevant information (e.g., units, type of gas) are provided here.
+In addition, unit conversion factors can be identified by looking up relevant source and target units in `rem$units$units` and cross-referencing them in `rem$units$annexOne`.
+
+
+#### **4. Query for download**
+
+Queries using the Flexible Query API are done with the `.req` object in `rem`:
+
+```{r example-query, eval = FALSE}
+result <- flex_query(
+  rem,
+  variable_ids = var_ids$variable_id,
+  party_ids = parties_id$id,
+  year_ids = years$id,
+  pretty = TRUE)
+
+```
+
+
+## Meta Overview
 
 ### Parties
 
@@ -106,7 +211,7 @@ knitr::kable(rem$years$annexOne)
 ```
 
 
-### Variables
+## Variable Overview (*ccmug*)
 
 - select directly from variable table
 - or choose one `ccmgu` and find corresponding variables
@@ -134,18 +239,18 @@ knitr::kable(dplyr::slice(rem$categories$annexOne, 1:10))
 knitr::kable(dplyr::slice(rem$categories$annexOne, 88:94))
 
 ```
-  
+
 #### Classification
 
 Classification differ based on respective sectors and/or CRF-Categories:
 
 - Energy: 
-  + Fuel Types
++ Fuel Types
 - Agriculture:
-  + Livestock types
++ Livestock types
 - LULUCF/LUCF:
-  + LULUCF/LUCF activities
-  
++ LULUCF/LUCF activities
+
 ```{r classification}
 
 knitr::kable(head(rem$classification$annexOne, 10))

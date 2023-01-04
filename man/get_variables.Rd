@@ -4,12 +4,12 @@
 \alias{get_variables}
 \title{Extract ccmgu information based on variableId}
 \usage{
-get_variables(ids, rms)
+get_variables(rms, ids)
 }
 \arguments{
-\item{ids}{integer, variableId}
-
 \item{rms}{list, \code{remis} object}
+
+\item{ids}{integer, variableId}
 }
 \value{
 data.frame containing integer variableId and text description of each
