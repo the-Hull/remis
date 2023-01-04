@@ -4,10 +4,10 @@
 \alias{find_id}
 \title{Search through UNFCCC Ids}
 \usage{
-find_id(x, id, verbose = FALSE)
+find_id(rms, id, verbose = FALSE)
 }
 \arguments{
-\item{x}{object from \code{rem_init()}}
+\item{rms}{object from \code{rem_init()}}
 
 \item{id}{integer}
 }

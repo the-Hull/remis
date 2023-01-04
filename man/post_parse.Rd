@@ -4,12 +4,17 @@
 \alias{post_parse}
 \title{POST and parse objects}
 \usage{
-post_parse(x, url = "api/records/flexible-queries/", query)
+post_parse(rms, path = "api/records/flexible-queries/", body, pretty = TRUE)
 }
 \arguments{
-\item{x}{list, remis object}
+\item{rms}{list, remis object}
 
-\item{url}{character, api path for flex query}
+\item{path}{character}
+
+\item{body}{list containing parties, years, variables}
+
+\item{parse}{logical, should raw results transformed to feature text
+descriptions instead of ids?}
 }
 \value{
 data.frame, parsed from json

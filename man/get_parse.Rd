@@ -4,10 +4,10 @@
 \alias{get_parse}
 \title{GET and parse objects}
 \usage{
-get_parse(x, url)
+get_parse(rms, url)
 }
 \arguments{
-\item{x}{response from}
+\item{rms}{response from}
 
 \item{url}{character, api path for desired object}
 }
