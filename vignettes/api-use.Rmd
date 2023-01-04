@@ -171,7 +171,7 @@ In addition, unit conversion factors can be identified by looking up relevant so
 
 Queries using the Flexible Query API are done with the `.req` object in `rem`:
 
-```{r example-query, eval = FALSE}
+```{r example-query, eval = TRUE}
 result <- flex_query(
   rem,
   variable_ids = var_ids$variable_id,
@@ -179,7 +179,48 @@ result <- flex_query(
   year_ids = years$id,
   pretty = TRUE)
 
+knitr::kable(head(result, 20))
+
 ```
+
+See results:
+
+```{r fig-transportation, out.width='100%',dpi=300, fig.width = 12, fig.height=6}
+
+library(ggplot2)
+library(dplyr)
+result %>%
+  mutate(years = as.numeric(gsub('[^0-9]', "", result$years, perl = TRUE))) %>% 
+  ggplot(aes(x = years, y = number_value, color = parties)) +
+  geom_line() +
+  facet_wrap(~classification, scales = "free_y") +
+  labs(y = sprintf('Emissions [%s]', unique(result$unit)),
+       title = unique(result$category)) +
+  theme_minimal(base_size = 16) +
+  theme(legend.position = 'top', legend.direction = 'horizontal')
+
+```
+
+```{r fig-transport-bar, out.width='100%',dpi=300, fig.width = 12, fig.height=6}
+
+result %>% 
+  mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
+  filter(classification != 'Total for category') %>% 
+  group_by(parties, years) %>% 
+  mutate(percent_contribution = number_value/sum(number_value, na.rm = TRUE) * 100,
+            ) %>% 
+  ggplot(aes(y = as.factor(years), x = percent_contribution, fill = classification)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~parties) +
+  labs(x = 'Contribution [%]',
+       y = 'Year',
+       title = unique(result$category)) +
+  theme_minimal(base_size = 16) +
+  scale_fill_brewer(palette = 'Set3') 
+
+
+```
+
 
 
 ## Meta Overview
