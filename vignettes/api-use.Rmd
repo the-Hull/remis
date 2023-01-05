@@ -34,6 +34,7 @@ variable tables and the query object for requests `.req`.
 
 ```{r setup, meassage = FALSE}
 library(remis)
+library(dplyr)
 
 rem <- rem_init()
 
@@ -186,13 +187,12 @@ See results:
 ```{r fig-transportation, out.width='100%',dpi=300, fig.width = 12, fig.height=6}
 
 library(ggplot2)
-library(dplyr)
 result %>%
   mutate(years = as.numeric(gsub('[^0-9]', "", result$years, perl = TRUE))) %>% 
   ggplot(aes(x = years, y = number_value, color = parties)) +
   geom_line() +
   facet_wrap(~classification, scales = "free_y") +
-  labs(y = sprintf('Emissions [%s]', unique(result$unit)),
+  labs(y = sprintf('GHG-Emissions [%s]', unique(result$unit)),
        title = unique(result$category)) +
   theme_minimal(base_size = 16) +
   theme(legend.position = 'top', legend.direction = 'horizontal')
@@ -262,6 +262,57 @@ population %>%
 
 ```
 
+### Example C
+
+The code below downloads and visualizes a time series which was used in a decomposition analyses in the Biennial Report of the Expert Council on Climate Change issues, as given in [Table 4, p. 220](https://expertenrat-klima.de/content/uploads/2022/11/ERK2022_Zweijahresgutachten.pdf#page=226).
+The data is from Table1.A(a)s1 of the National Inventory Report after UNFCCC, CRF-Category *1.A.1.a  Public Electricity and Heat Production*.
+
+```{r fig-energy, out.width='100%',dpi=300, fig.width = 10, fig.height=6}
+
+
+# check
+cat1A1a <- rem$categories$annexOne[grepl("1.A.1.a.", rem$categories$annexOne$name), ]
+
+# manually choose id
+# cat1A1a$id[1]
+
+# get variables
+cat1A1a_variables <- get_variables(
+  rms = rem,
+  select_varid(vars = rem$variables$annexOne, cat1A1a$id[1])$variableId
+)
+
+#choose id:
+var_id <- cat1A1a_variables %>%
+  filter(classification == 'Total for category',
+         gas == 'Aggregate GHGs'
+  ) %>% 
+  dplyr::glimpse() %>% 
+  dplyr::pull(variable_id)
+
+# download data
+cat1A1a_agg_ghg <- flex_query(
+  rms = rem,
+  variable_ids = var_id,
+  party_ids = 13,
+  year_ids = rem$years$annexOne$id)
+
+# data includes year = "base year",
+# for most parties this = 1990, but may vary.
+# the code below replaces 'Base year' with NA, and thus discards the observation.
+# see UNFCCC API documentation
+cat1A1a_agg_ghg %>%
+  mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
+  ggplot(aes(x = years, y = number_value)) +
+  geom_line(linewidth = 1, color = 'steelblue') +
+  geom_point(color = 'steelblue', size = 3) +
+  labs(y = sprintf('GHG-Emissions [%s]', unique(cat1A1a_agg_ghg$unit)),
+       title = unique(cat1A1a_agg_ghg$category)) +
+  theme_minimal(base_size = 16) +
+  theme(legend.position = 'top', legend.direction = 'horizontal')
+
+
+```
 
 
 ## Meta Overview
@@ -272,7 +323,6 @@ Parties are stored in `rem$parties`
 
 ```{r parties, message=FALSE}
 
-library(dplyr)
 # up to 5th entry on parties
 knitr::kable(rem$parties %>% 
                dplyr::group_by(name_code) %>% 

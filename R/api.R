@@ -102,6 +102,8 @@ rem_init <- function(base_url = meta$api_base_url){
 #' @export
 flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/records/flexible-queries/', pretty = TRUE){
 
+  rem_check(rms)
+
   # check if any are null.. download all?
   # warn for large dl and ask to proceed with input y/n
   # add `warn_large` argument as flag, set to FALSE for headless systems
@@ -236,6 +238,7 @@ select_varid <- function(
     measure_id = NULL,
     gas_id = NULL){
 
+
   nvars <- nrow(vars)
 
 
@@ -323,7 +326,6 @@ find_id <- function(rms, id, verbose = FALSE){
 #' @param ids
 #'
 #' @return character, names corresponding to `ids`
-#' @export
 #'
 #' @examples
 get_names <- function(rms, ids){
@@ -355,6 +357,8 @@ get_names <- function(rms, ids){
 #' @return data.frame containing integer variableId and text description of each
 #' corresponding ccmug id
 get_variables <- function(rms, ids){
+
+  rem_check(rms)
 
   un_id <- unique(ids)
   categories <- vector('character', length(un_id))
@@ -428,10 +432,21 @@ get_variables <- function(rms, ids){
 
 
 
+rem_check <- function(rms){
+
+  stopifnot("Must supply a remis object." = {
+    !inherits(rms, 'remis')
+    any(names(rms)=='.req')
+  })
+
+}
+
+
 
 
 # TODO: -------------
-## remis_check() ...-------------
 # ensure that objects have suitable remis format
 
 # clean_years <- function(years){}
+
+
