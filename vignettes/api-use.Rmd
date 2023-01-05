@@ -80,7 +80,7 @@ Define whether annexOne or nonAnnexOne data shall be downloaded, and then:
 
 Note, that objects in `rem` (excluding `parties`) provide all data sources (where applicable) reflected in the list items `r names(rem$categories)`.
 
-### Example
+### Example A
 
 #### **1. Select Party**
 
@@ -92,8 +92,8 @@ Here we choose Germany and France.
 # View(rem$parties)
 
 parties_mask <- rem$parties$parties_code %in% c('DEU', 'FRA')
-parties_id <- rem$parties[parties_mask, c('id', 'name', 'categoryCode')]
-knitr::kable(parties_id)
+parties <- rem$parties[parties_mask, c('id', 'name', 'categoryCode')]
+knitr::kable(parties)
 
 ```
 Note, that both parties are in Annex I.
@@ -116,7 +116,7 @@ Ideally, one item of interest should be selected, such as a category or a measur
 This can be done either by browsing in `RStudio` with `View(rem)` and using the interactive filter function, or by searching programmatically. 
 The example below shows the latter.
 
-Here, we assume an interest in missions from cars in the transportation sector by fuel type and in total in the CRF-Category *1.A.3.b.i  Cars* (id = 9279).
+Here, we assume an interest in emissions from cars in the transportation sector by fuel type and in total in the CRF-Category *1.A.3.b.i  Cars* (id = 9279).
 Therefore, we begin with *category* as our starting point.
 
 
@@ -131,24 +131,22 @@ knitr::kable(as.data.frame(t(category)))
 ```
 The table above also highlights the nesting structure throughout the CRF-Category tree.
 
-Next, find appropriate variables (i.e. combination of *ccmug*'s_ that contain our category of interest.
+Next, find appropriate variables (i.e. combination of *ccmug*'s) that contain our category of interest.
 
 ```{r example-variables}
 variables <- select_varid(
   vars = rem$variables$annexOne,
   category_id = category$id)
 knitr::kable(head(variables, 20))
-
-nv <- nrow(variables)
 ```
-There are a total of `r nv` variable combinations that include our category of interest.
+There are a total of `r nrow(variables)` variable combinations that include our category of interest.
 Note that `select_varid()` also allows selections by including other `ccmugs` to be more specific.
 Let's inspect the variables in a more human-readable format:
 
 ```{r example-variablestext}
 variables_text <- get_variables(
-  ids = variables$variableId,
-  rms = rem)
+  rms = rem,
+  ids = variables$variableId)
 knitr::kable(variables_text[order(variables_text$classification, variables_text$measure), ])
 
 ```
@@ -169,13 +167,13 @@ In addition, unit conversion factors can be identified by looking up relevant so
 
 #### **4. Query for download**
 
-Queries using the Flexible Query API are done with the `.req` object in `rem`:
+Queries using the Flexible Query API are done `flex_query()`, which uses the `.req` object in `rem` to make a POST request:
 
 ```{r example-query, eval = TRUE}
 result <- flex_query(
   rem,
   variable_ids = var_ids$variable_id,
-  party_ids = parties_id$id,
+  party_ids = parties$id,
   year_ids = years$id,
   pretty = TRUE)
 
@@ -203,9 +201,11 @@ result %>%
 
 ```{r fig-transport-bar, out.width='100%',dpi=300, fig.width = 12, fig.height=6}
 
+`%nin%` <- Negate(`%in%`)
+
 result %>% 
   mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
-  filter(classification != 'Total for category') %>% 
+  filter(classification %nin% c('Total for category', 'Gaseous Fuels', 'Liquid Fuels')) %>% 
   group_by(parties, years) %>% 
   mutate(percent_contribution = number_value/sum(number_value, na.rm = TRUE) * 100,
             ) %>% 
@@ -216,7 +216,48 @@ result %>%
        y = 'Year',
        title = unique(result$category)) +
   theme_minimal(base_size = 16) +
-  scale_fill_brewer(palette = 'Set3') 
+  scale_fill_brewer(palette = 'Set2', direction = -1)
+
+
+```
+
+
+### Example B
+
+Here we will exploit the Flexible Queries API to download `extData`, focusing on the World Bank population data.
+
+```{r echo=FALSE}
+knitr::kable(rem$categories$extData)
+
+```
+
+```{r fig-population, out.width='50%',dpi=300, fig.width = 6, fig.height=6}
+# from extData - select Population Category:
+category_mask <- grepl('Population', rem$categories$extData$name, fixed = FALSE)
+category <- rem$categories$extData[category_mask, ]
+
+# find variableIds containing population - ensure appropriate annex category 
+# is used here based on desired party
+var_ids <- select_varid(vars = rem$variables$annexOne, category_id = category$id)
+
+# check and confirm desired variable is correct
+get_variables(rms = rem, var_ids$variableId)
+
+population <- flex_query(
+  rms = rem,
+  variable_ids = var_ids$variableId, 
+  party_ids = parties$id, 
+  year_ids = years$id)
+
+
+population %>%
+  mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
+  ggplot(aes(x = years, y = number_value, color = parties)) +
+  geom_line(linewidth = 1.5) +
+  labs(y = sprintf('Population [%s]', unique(population$unit)),
+       title = unique(population$category)) +
+  theme_minimal(base_size = 16) +
+  theme(legend.position = 'top', legend.direction = 'horizontal')
 
 
 ```

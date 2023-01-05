@@ -317,7 +317,7 @@ find_id <- function(rms, id, verbose = FALSE){
 
 
 
-#' Get name based on id
+#' Get name based on ids
 #'
 #' @param rms list, lower-level item from `remis` object, like `..$parties`
 #' @param ids
@@ -365,7 +365,23 @@ get_variables <- function(rms, ids){
 
   for(idx in seq_along(un_id)){
 
+    # extData variables are duplicated, i.e. listed in both annexOne and nonAnnexOne
+    # Variable tables.
+    # if aon = length 2, we assume it is extData and choose annexOne for time being
     aon <- names(rms$variables)[grepl(un_id[idx], rms$variables)]
+
+      isextData <- FALSE
+    if(length(aon) == 2){
+      isextData <- TRUE
+      aon <- aon[1]
+    }
+
+
+
+
+
+
+
 
     # get variable row
     row_lgl <- rms$variables[[aon]][['variableId']] == un_id[idx]
@@ -378,6 +394,10 @@ get_variables <- function(rms, ids){
     gas[idx] <- find_id(rms$gas, row$gasId)
     unit[idx] <- find_id(rms$units$units, row$unitId)
 
+  }
+
+  if(isextData){
+    aon <- 'extData'
   }
 
 
