@@ -20,7 +20,8 @@ Imports:
     jsonlite,
     magrittr,
     tidyr
-URL: https://github.com/the-Hull/remis
+URL: https://github.com/the-Hull/remis,
+    https://the-hull.github.io/remis/
 BugReports: https://github.com/the-Hull/remis/issues
 Suggests: 
     knitr,
