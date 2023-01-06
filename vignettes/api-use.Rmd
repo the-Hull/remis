@@ -345,15 +345,6 @@ knitr::kable(rem$years$annexOne)
 
 ## Variable Overview (*ccmug*)
 
-- select directly from variable table
-- or choose one `ccmgu` and find corresponding variables
-
-```{r downloading}
-# set up API object
-
-
-```
-
 Sections below give a brief overview on `ccmgu`'s.
 
 #### Categories
