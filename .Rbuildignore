@@ -14,3 +14,7 @@
 ^\./R/dev\.R$
 ^R/dev\.R$
 ^R/utils_processing\.R$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
