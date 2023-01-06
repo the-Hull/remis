@@ -218,7 +218,8 @@ parse_raw <- function(rms, raw){
 #' Variable selector
 #'
 #' Select variables based on categories, classifications, measures and gasses using
-#' ids. Variable selection is based on the union of all supplied ids, non-intersecting.
+#' ids. Variable selection is based on the intersection of supplied ids (`union = FALSE`) or union
+#' (only select variables where all supplied ccmug's are present).
 #' If no ids are supplied, all variables are returned.
 #'
 #' @param vars data.frame of variable ids with corresponding cat/class/meas/gas ids
@@ -226,6 +227,8 @@ parse_raw <- function(rms, raw){
 #' @param classification_id integer
 #' @param measure_id integer
 #' @param gas_id integer
+#' @param union logical, for `TRUE` only return variables where **all** supplied ccmug's are represented,
+#'   for `FALSE` return every variable where any of the ccmug's is present.
 #'
 #' @export
 #'
@@ -236,7 +239,8 @@ select_varid <- function(
     category_id = NULL,
     classification_id = NULL,
     measure_id = NULL,
-    gas_id = NULL){
+    gas_id = NULL,
+    union = TRUE){
 
 
   nvars <- nrow(vars)
@@ -254,6 +258,8 @@ select_varid <- function(
   null_entries <- unlist(sapply(id_lists, is.null))
 
   get_all_ids <- all(null_entries)
+
+  n_entries <- sum(!null_entries)
 
   # check if no ids supplied
   if(get_all_ids){
@@ -275,8 +281,12 @@ select_varid <- function(
 
     masks <- do.call(cbind, masks)
 
-    # find all rows with TRUE hits in mask
-    vars_sub <- vars[rowSums(masks) > 0,]
+    if(!union){
+      # find all rows with TRUE hits in mask
+      vars_sub <- vars[rowSums(masks) > 0, ]
+    } else if(union){
+      vars_sub <- vars[rowSums(masks) == n_entries, ]
+    }
 
     return(vars_sub)
   }
@@ -298,7 +308,11 @@ find_id <- function(rms, id, verbose = FALSE){
   # recurse through list and keep track of nesting
   while(!inherits(rms, 'integer')){
 
-    nm <- names(rms)[grepl(id, rms)][1]
+    # grepl doesn't find all items in lists - unlist and clean names
+    nm <- names(unlist(rms))[grepl(id, unlist(rms))][1]
+    # unlisted items have form "colname00" or "colname.00"
+    # clean with regex
+    nm <- gsub("((?<=\\w)[.].+[0-9]+$)|([0-9]+$)", "", nm, perl = TRUE)
     nms <- c(nms, nm)
     if(nm == 'id'){
       y <- rms
@@ -350,17 +364,30 @@ get_names <- function(rms, ids){
 #' Extract ccmgu information based on variableId
 #'
 #' @param rms list, `remis` object
-#' @param ids integer, variableId
+#' @param variables data.frame, containing (subsetted) variableIds and ccmug Ids
 #'
 #' @export
 #'
 #' @return data.frame containing integer variableId and text description of each
 #' corresponding ccmug id
-get_variables <- function(rms, ids){
+get_variables <- function(rms, variables){
 
   rem_check(rms)
 
-  un_id <- unique(ids)
+  expected_cols <- c(
+    "variableId",
+    "categoryId",
+    "classificationId",
+    "measureId",
+    "gasId",
+    "unitId")
+
+  stopifnot("Please provide a data.frame or tbl with the following names:
+             variableId, categoryId, classificationId, measureId, gasId, unitId" =
+               all(colnames(variables) %in% expected_cols & ncol(variables)==length(expected_cols)))
+
+
+  un_id <- unique(variables$variableId)
   categories <- vector('character', length(un_id))
   classification <- vector('character', length(un_id))
   measures <- vector('character', length(un_id))
@@ -382,6 +409,8 @@ get_variables <- function(rms, ids){
 
 
 
+
+    # loop over rows in variables
 
 
 
