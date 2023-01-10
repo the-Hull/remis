@@ -92,7 +92,7 @@ rem_init <- function(base_url = meta$api_base_url){
 
 #' Query UNFCCC DI with Flex Query API
 #'
-#' @param rms list, object form `rem_init()`
+#' @param rms list, object from \link{`rem_init()`}
 #' @param variable_ids integer, ids of interest
 #' @param party_ids integer, ids of interest
 #' @param year_ids integer, ids of interest
@@ -105,6 +105,7 @@ rem_init <- function(base_url = meta$api_base_url){
 flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/records/flexible-queries/', pretty = TRUE){
 
   rem_check(rms)
+  duplicate_check(rms, variable_id = variable_ids)
 
 
 
@@ -118,6 +119,7 @@ flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/recor
     partyIds = as.list(party_ids),
     yearIds = as.list(year_ids)
     )
+
 
 
   result <- post_parse(rms = rms, path = path, body = body, pretty = pretty)
@@ -491,7 +493,7 @@ duplicate_check <- function(rms, variable_id){
 
 
     warning(
-      sprintf("Found duplicated variableId ids: %s.\n Proceed with Caution and check final results.\n", s))
+      sprintf("Found duplicated variableId ids: %s.\n Check results and possibly exclude unwanted observations.\n", s))
 
   }
 
@@ -500,9 +502,19 @@ duplicate_check <- function(rms, variable_id){
 
 
 # TODO: -------------
-# ensure that objects have suitable remis format
 
-# clean_years <- function(years){}
+# clean_years <- function(years){
+
+# Year: This field provides dropdown list for years from 1990 to the latest
+# available year, as well as the base year. The base year, which is
+#  applicable only to Annex I Parties, relates to the base year under the
+# Climate Change Convention which is 1990 for most Parties.
+# The other Parties that have a base year other than 1990 are:
+# Bulgaria (1988), Hungary (average of 1985–1987), Poland (1988),
+# Romania (1989) and Slovenia (1986).
+
+
+# }
 
 # check vars - use select_varid / text variables to
 # filter final results!

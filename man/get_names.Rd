@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{get_names}
 \alias{get_names}
-\title{Get name based on id}
+\title{Get name based on ids}
 \usage{
 get_names(rms, ids)
 }
@@ -15,5 +15,5 @@ get_names(rms, ids)
 character, names corresponding to \code{ids}
 }
 \description{
-Get name based on id
+Get name based on ids
 }

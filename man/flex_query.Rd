@@ -14,7 +14,7 @@ flex_query(
 )
 }
 \arguments{
-\item{rms}{list, object form \code{rem_init()}}
+\item{rms}{list, object from \link{`rem_init()`}}
 
 \item{variable_ids}{integer, ids of interest}
 

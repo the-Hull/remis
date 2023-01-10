@@ -9,7 +9,9 @@ select_varid(
   category_id = NULL,
   classification_id = NULL,
   measure_id = NULL,
-  gas_id = NULL
+  gas_id = NULL,
+  unit_id = NULL,
+  union = TRUE
 )
 }
 \arguments{
@@ -22,6 +24,11 @@ select_varid(
 \item{measure_id}{integer}
 
 \item{gas_id}{integer}
+
+\item{unit_id}{integer}
+
+\item{union}{logical, for \code{TRUE} only return variables where \strong{all} supplied ccmug's are represented,
+for \code{FALSE} return every variable where any of the ccmug's is present.}
 }
 \value{
 data.frame with same dims of \code{vars} if no ids are supplied, or with rows
@@ -29,6 +36,7 @@ resulting from union of ids, and columns of \code{vars}
 }
 \description{
 Select variables based on categories, classifications, measures and gasses using
-ids. Variable selection is based on the union of all supplied ids, non-intersecting.
+ids. Variable selection is based on the intersection of supplied ids (\code{union = FALSE}) or union
+(only select variables where all supplied ccmug's are present).
 If no ids are supplied, all variables are returned.
 }
