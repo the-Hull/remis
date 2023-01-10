@@ -13,5 +13,13 @@ rem_init(base_url = meta$api_base_url)
 list
 }
 \description{
-Initialize remis
+Get meta data for the Flex Query API and initialize the API.
+}
+\examples{
+\donttest{
+rem <- rem_init()
+names(rem)
+
+
+}
 }

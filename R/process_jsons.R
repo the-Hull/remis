@@ -1,5 +1,43 @@
 
+#' Flatten party JSON-list response
+#'
+#' @param parties
+#'
+#' @return data.frame of parties
+flatten_parties <- function(parties){
 
+
+  res_list <- vector('list', nrow(parties))
+  for(idx in seq_len(nrow(parties))){
+
+
+
+
+    res_list[[idx]] <- suppressWarnings(
+      cbind(
+        parties[idx, c('name', "categoryCode")],
+        parties[['parties']][idx]
+      )
+    )
+    if(!any('noData' %in% colnames(res_list[[idx]]))){
+      res_list[[idx]][['noData']] <- NA
+    }
+  }
+
+  nm <- c(
+    "name_code",
+    "categoryCode",
+    "id",
+    "parties_code",
+    "name",
+    "parties_noData")
+
+  res <- setNames(do.call(rbind, res_list), nm = nm)
+
+  return(res)
+
+
+}
 
 # parse non-instances -----------------------------------------------------
 
@@ -8,7 +46,6 @@
 #' @param x response
 #'
 #' @return tibble
-#' @export
 flatten_json <- function(x){
   # identify nested column
   nested_cols <- colnames(x)[sapply(x, is.list)]
@@ -106,11 +143,11 @@ add_name_column <- function(x){
     names(x)[2] <- 'name'
     return(x)
   } else {
-  column <- apply(x, MARGIN = 1, function(z) max(which(!is.na(z))))
-  x$name <- vapply(seq_len(length(column)),
-                      function(idx){
-                        x[idx,column[idx], drop = TRUE]
-                      }, FUN.VALUE = character(1))
+    column <- apply(x, MARGIN = 1, function(z) max(which(!is.na(z))))
+    x$name <- vapply(seq_len(length(column)),
+                     function(idx){
+                       x[idx,column[idx], drop = TRUE]
+                     }, FUN.VALUE = character(1))
   }
   return(x)
 }

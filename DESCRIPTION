@@ -17,9 +17,7 @@ LazyData: true
 Imports: 
     crul,
     dplyr,
-    jsonlite,
-    magrittr,
-    tidyr
+    jsonlite
 URL: https://github.com/the-Hull/remis,
     https://the-hull.github.io/remis/
 BugReports: https://github.com/the-Hull/remis/issues
