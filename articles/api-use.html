@@ -123,9 +123,10 @@ object for requests <code>.req</code>.</p>
 <span><span class="co">#&gt; parsing api/variables/fq/nonAnnexOne</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rem</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "parties"        "years"          "categories"     "classification"</span></span>
-<span><span class="co">#&gt; [5] "measures"       "gas"            "units"          "variables"     </span></span>
-<span><span class="co">#&gt; [9] ".req"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "parties"               "years"                 "categories"           </span></span>
+<span><span class="co">#&gt;  [4] "classification"        "measures"              "gas"                  </span></span>
+<span><span class="co">#&gt;  [7] "units"                 "variables"             ".req"                 </span></span>
+<span><span class="co">#&gt; [10] "duplicate_variableIds"</span></span></code></pre></div>
 <p>Note that only calls using the Flexible Query API are currently
 implemented. These allow interacting with data sources from:</p>
 <ul>
@@ -155,6 +156,8 @@ versions.</p>
 <strong>variables</strong> - class: list</li>
 <li>
 <strong>.req</strong> - class: HttpClient, R6</li>
+<li>
+<strong>duplicate_variableIds</strong> - class: integer</li>
 </ul>
 <div class="section level2">
 <h2 id="building-up-flexible-queries">Building up Flexible Queries<a class="anchor" aria-label="anchor" href="#building-up-flexible-queries"></a>
@@ -189,26 +192,12 @@ cadCP2.</p>
 <span></span>
 <span><span class="va">parties_mask</span> <span class="op">&lt;-</span> <span class="va">rem</span><span class="op">$</span><span class="va">parties</span><span class="op">$</span><span class="va">parties_code</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'DEU'</span>, <span class="st">'FRA'</span><span class="op">)</span></span>
 <span><span class="va">parties</span> <span class="op">&lt;-</span> <span class="va">rem</span><span class="op">$</span><span class="va">parties</span><span class="op">[</span><span class="va">parties_mask</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'id'</span>, <span class="st">'name'</span>, <span class="st">'categoryCode'</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">parties</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="right">id</th>
-<th align="left">name</th>
-<th align="left">categoryCode</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">23</td>
-<td align="left">France</td>
-<td align="left">annexOne</td>
-</tr>
-<tr class="even">
-<td align="right">13</td>
-<td align="left">Germany</td>
-<td align="left">annexOne</td>
-</tr>
-</tbody>
-</table>
+<span><span class="va">parties</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
+<span><span class="co">#&gt;      id name    categoryCode</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>    23 France  annexOne    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>    13 Germany annexOne</span></span></code></pre></div>
 <p>Note, that both parties are in Annex I.</p>
 </div>
 <div class="section level4">
@@ -220,171 +209,39 @@ cadCP2.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># base year has id = 0</span></span>
 <span><span class="va">years</span> <span class="op">&lt;-</span> <span class="va">rem</span><span class="op">$</span><span class="va">years</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span><span class="va">rem</span><span class="op">$</span><span class="va">years</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">id</span> <span class="op">!=</span> <span class="fl">0</span>, <span class="op">]</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">years</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left"></th>
-<th align="right">id</th>
-<th align="left">name</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">2</td>
-<td align="right">32</td>
-<td align="left">1990</td>
-</tr>
-<tr class="even">
-<td align="left">3</td>
-<td align="right">33</td>
-<td align="left">1991</td>
-</tr>
-<tr class="odd">
-<td align="left">4</td>
-<td align="right">34</td>
-<td align="left">1992</td>
-</tr>
-<tr class="even">
-<td align="left">5</td>
-<td align="right">35</td>
-<td align="left">1993</td>
-</tr>
-<tr class="odd">
-<td align="left">6</td>
-<td align="right">36</td>
-<td align="left">1994</td>
-</tr>
-<tr class="even">
-<td align="left">7</td>
-<td align="right">37</td>
-<td align="left">1995</td>
-</tr>
-<tr class="odd">
-<td align="left">8</td>
-<td align="right">38</td>
-<td align="left">1996</td>
-</tr>
-<tr class="even">
-<td align="left">9</td>
-<td align="right">39</td>
-<td align="left">1997</td>
-</tr>
-<tr class="odd">
-<td align="left">10</td>
-<td align="right">40</td>
-<td align="left">1998</td>
-</tr>
-<tr class="even">
-<td align="left">11</td>
-<td align="right">41</td>
-<td align="left">1999</td>
-</tr>
-<tr class="odd">
-<td align="left">12</td>
-<td align="right">42</td>
-<td align="left">2000</td>
-</tr>
-<tr class="even">
-<td align="left">13</td>
-<td align="right">43</td>
-<td align="left">2001</td>
-</tr>
-<tr class="odd">
-<td align="left">14</td>
-<td align="right">44</td>
-<td align="left">2002</td>
-</tr>
-<tr class="even">
-<td align="left">15</td>
-<td align="right">45</td>
-<td align="left">2003</td>
-</tr>
-<tr class="odd">
-<td align="left">16</td>
-<td align="right">46</td>
-<td align="left">2004</td>
-</tr>
-<tr class="even">
-<td align="left">17</td>
-<td align="right">47</td>
-<td align="left">2005</td>
-</tr>
-<tr class="odd">
-<td align="left">18</td>
-<td align="right">48</td>
-<td align="left">2006</td>
-</tr>
-<tr class="even">
-<td align="left">19</td>
-<td align="right">49</td>
-<td align="left">2007</td>
-</tr>
-<tr class="odd">
-<td align="left">20</td>
-<td align="right">50</td>
-<td align="left">2008</td>
-</tr>
-<tr class="even">
-<td align="left">21</td>
-<td align="right">51</td>
-<td align="left">2009</td>
-</tr>
-<tr class="odd">
-<td align="left">22</td>
-<td align="right">52</td>
-<td align="left">2010</td>
-</tr>
-<tr class="even">
-<td align="left">23</td>
-<td align="right">53</td>
-<td align="left">2011</td>
-</tr>
-<tr class="odd">
-<td align="left">24</td>
-<td align="right">54</td>
-<td align="left">2012</td>
-</tr>
-<tr class="even">
-<td align="left">25</td>
-<td align="right">55</td>
-<td align="left">2013</td>
-</tr>
-<tr class="odd">
-<td align="left">26</td>
-<td align="right">56</td>
-<td align="left">2014</td>
-</tr>
-<tr class="even">
-<td align="left">27</td>
-<td align="right">57</td>
-<td align="left">2015</td>
-</tr>
-<tr class="odd">
-<td align="left">28</td>
-<td align="right">58</td>
-<td align="left">2016</td>
-</tr>
-<tr class="even">
-<td align="left">29</td>
-<td align="right">59</td>
-<td align="left">2017</td>
-</tr>
-<tr class="odd">
-<td align="left">30</td>
-<td align="right">60</td>
-<td align="left">2018</td>
-</tr>
-<tr class="even">
-<td align="left">31</td>
-<td align="right">61</td>
-<td align="left">2019</td>
-</tr>
-<tr class="odd">
-<td align="left">32</td>
-<td align="right">62</td>
-<td align="left">Last Inventory Year (2020)</td>
-</tr>
-</tbody>
-</table>
+<span><span class="va">years</span></span>
+<span><span class="co">#&gt;    id                       name</span></span>
+<span><span class="co">#&gt; 2  32                       1990</span></span>
+<span><span class="co">#&gt; 3  33                       1991</span></span>
+<span><span class="co">#&gt; 4  34                       1992</span></span>
+<span><span class="co">#&gt; 5  35                       1993</span></span>
+<span><span class="co">#&gt; 6  36                       1994</span></span>
+<span><span class="co">#&gt; 7  37                       1995</span></span>
+<span><span class="co">#&gt; 8  38                       1996</span></span>
+<span><span class="co">#&gt; 9  39                       1997</span></span>
+<span><span class="co">#&gt; 10 40                       1998</span></span>
+<span><span class="co">#&gt; 11 41                       1999</span></span>
+<span><span class="co">#&gt; 12 42                       2000</span></span>
+<span><span class="co">#&gt; 13 43                       2001</span></span>
+<span><span class="co">#&gt; 14 44                       2002</span></span>
+<span><span class="co">#&gt; 15 45                       2003</span></span>
+<span><span class="co">#&gt; 16 46                       2004</span></span>
+<span><span class="co">#&gt; 17 47                       2005</span></span>
+<span><span class="co">#&gt; 18 48                       2006</span></span>
+<span><span class="co">#&gt; 19 49                       2007</span></span>
+<span><span class="co">#&gt; 20 50                       2008</span></span>
+<span><span class="co">#&gt; 21 51                       2009</span></span>
+<span><span class="co">#&gt; 22 52                       2010</span></span>
+<span><span class="co">#&gt; 23 53                       2011</span></span>
+<span><span class="co">#&gt; 24 54                       2012</span></span>
+<span><span class="co">#&gt; 25 55                       2013</span></span>
+<span><span class="co">#&gt; 26 56                       2014</span></span>
+<span><span class="co">#&gt; 27 57                       2015</span></span>
+<span><span class="co">#&gt; 28 58                       2016</span></span>
+<span><span class="co">#&gt; 29 59                       2017</span></span>
+<span><span class="co">#&gt; 30 60                       2018</span></span>
+<span><span class="co">#&gt; 31 61                       2019</span></span>
+<span><span class="co">#&gt; 32 62 Last Inventory Year (2020)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="select-from-ccmugs">
@@ -407,55 +264,18 @@ transportation sector by fuel type and in total in the CRF-Category
 <span></span>
 <span><span class="va">category_mask</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'1.A.3.b.i  Cars'</span>, <span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="va">category</span> <span class="op">&lt;-</span> <span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span><span class="va">category_mask</span>, <span class="op">]</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">category</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left"></th>
-<th align="left">V1</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">id</td>
-<td align="left">9279</td>
-</tr>
-<tr class="even">
-<td align="left">level_1</td>
-<td align="left">Totals</td>
-</tr>
-<tr class="odd">
-<td align="left">level_2</td>
-<td align="left">Total GHG emissions with LULUCF</td>
-</tr>
-<tr class="even">
-<td align="left">level_3</td>
-<td align="left">1. Energy</td>
-</tr>
-<tr class="odd">
-<td align="left">level_4</td>
-<td align="left">1.AA Fuel Combustion - Sectoral approach</td>
-</tr>
-<tr class="even">
-<td align="left">level_5</td>
-<td align="left">1.A.3 Transport</td>
-</tr>
-<tr class="odd">
-<td align="left">level_6</td>
-<td align="left">1.A.3.b Road Transportation</td>
-</tr>
-<tr class="even">
-<td align="left">level_7</td>
-<td align="left">1.A.3.b.i Cars</td>
-</tr>
-<tr class="odd">
-<td align="left">level_8</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">name</td>
-<td align="left">1.A.3.b.i Cars</td>
-</tr>
-</tbody>
-</table>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">category</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                                                V1</span></span>
+<span><span class="co">#&gt; id                                           9279</span></span>
+<span><span class="co">#&gt; level_1                                    Totals</span></span>
+<span><span class="co">#&gt; level_2           Total GHG emissions with LULUCF</span></span>
+<span><span class="co">#&gt; level_3                                1.  Energy</span></span>
+<span><span class="co">#&gt; level_4 1.AA  Fuel Combustion - Sectoral approach</span></span>
+<span><span class="co">#&gt; level_5                          1.A.3  Transport</span></span>
+<span><span class="co">#&gt; level_6              1.A.3.b  Road Transportation</span></span>
+<span><span class="co">#&gt; level_7                           1.A.3.b.i  Cars</span></span>
+<span><span class="co">#&gt; level_8                                      &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; name                              1.A.3.b.i  Cars</span></span></code></pre></div>
 <p>The table above also highlights the nesting structure throughout the
 CRF-Category tree.</p>
 <p>Next, find appropriate variables (i.e. combination of
@@ -464,209 +284,28 @@ CRF-Category tree.</p>
 <code class="sourceCode R"><span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_varid.html">select_varid</a></span><span class="op">(</span></span>
 <span>  vars <span class="op">=</span> <span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span>,</span>
 <span>  category_id <span class="op">=</span> <span class="va">category</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variables</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="7%">
-<col width="16%">
-<col width="16%">
-<col width="25%">
-<col width="14%">
-<col width="8%">
-<col width="10%">
-</colgroup>
-<thead><tr class="header">
-<th align="left"></th>
-<th align="right">variableId</th>
-<th align="right">categoryId</th>
-<th align="right">classificationId</th>
-<th align="right">measureId</th>
-<th align="right">gasId</th>
-<th align="right">unitId</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">3333</td>
-<td align="right">924906</td>
-<td align="right">9279</td>
-<td align="right">10538</td>
-<td align="right">10460</td>
-<td align="right">10471</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">3599</td>
-<td align="right">928586</td>
-<td align="right">9279</td>
-<td align="right">10525</td>
-<td align="right">10591</td>
-<td align="right">10469</td>
-<td align="right">28</td>
-</tr>
-<tr class="odd">
-<td align="left">3940</td>
-<td align="right">926628</td>
-<td align="right">9279</td>
-<td align="right">10525</td>
-<td align="right">10460</td>
-<td align="right">10469</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">3946</td>
-<td align="right">926278</td>
-<td align="right">9279</td>
-<td align="right">10528</td>
-<td align="right">10460</td>
-<td align="right">10468</td>
-<td align="right">5</td>
-</tr>
-<tr class="odd">
-<td align="left">3974</td>
-<td align="right">925435</td>
-<td align="right">9279</td>
-<td align="right">10538</td>
-<td align="right">10460</td>
-<td align="right">10468</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">3975</td>
-<td align="right">925469</td>
-<td align="right">9279</td>
-<td align="right">10524</td>
-<td align="right">10460</td>
-<td align="right">10471</td>
-<td align="right">5</td>
-</tr>
-<tr class="odd">
-<td align="left">3989</td>
-<td align="right">926637</td>
-<td align="right">9279</td>
-<td align="right">10520</td>
-<td align="right">10460</td>
-<td align="right">10468</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">3998</td>
-<td align="right">17578</td>
-<td align="right">9279</td>
-<td align="right">10510</td>
-<td align="right">10460</td>
-<td align="right">10468</td>
-<td align="right">5</td>
-</tr>
-<tr class="odd">
-<td align="left">4011</td>
-<td align="right">924766</td>
-<td align="right">9279</td>
-<td align="right">10525</td>
-<td align="right">10460</td>
-<td align="right">10468</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="left">4342</td>
-<td align="right">928580</td>
-<td align="right">9279</td>
-<td align="right">10513</td>
-<td align="right">10591</td>
-<td align="right">10469</td>
-<td align="right">28</td>
-</tr>
-<tr class="odd">
-<td align="left">4346</td>
-<td align="right">928626</td>
-<td align="right">9279</td>
-<td align="right">10524</td>
-<td align="right">10591</td>
-<td align="right">10469</td>
-<td align="right">28</td>
-</tr>
-<tr class="even">
-<td align="left">4348</td>
-<td align="right">928524</td>
-<td align="right">9279</td>
-<td align="right">10520</td>
-<td align="right">10591</td>
-<td align="right">10469</td>
-<td align="right">28</td>
-</tr>
-<tr class="odd">
-<td align="left">4349</td>
-<td align="right">928544</td>
-<td align="right">9279</td>
-<td align="right">10528</td>
-<td align="right">10591</td>
-<td align="right">10469</td>
-<td align="right">28</td>
-</tr>
-<tr class="even">
-<td align="left">4893</td>
-<td align="right">927427</td>
-<td align="right">9279</td>
-<td align="right">10520</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="odd">
-<td align="left">4896</td>
-<td align="right">927097</td>
-<td align="right">9279</td>
-<td align="right">10542</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="even">
-<td align="left">4897</td>
-<td align="right">927130</td>
-<td align="right">9279</td>
-<td align="right">10530</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="odd">
-<td align="left">4899</td>
-<td align="right">927247</td>
-<td align="right">9279</td>
-<td align="right">10510</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="even">
-<td align="left">4900</td>
-<td align="right">927327</td>
-<td align="right">9279</td>
-<td align="right">10524</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="odd">
-<td align="left">4901</td>
-<td align="right">927370</td>
-<td align="right">9279</td>
-<td align="right">10513</td>
-<td align="right">10578</td>
-<td align="right">10637</td>
-<td align="right">7</td>
-</tr>
-<tr class="even">
-<td align="left">5330</td>
-<td align="right">926287</td>
-<td align="right">9279</td>
-<td align="right">10520</td>
-<td align="right">10460</td>
-<td align="right">10469</td>
-<td align="right">5</td>
-</tr>
-</tbody>
-</table>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variables</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      variableId categoryId classificationId measureId gasId unitId</span></span>
+<span><span class="co">#&gt; 3505     928544       9279            10528     10591 10469     28</span></span>
+<span><span class="co">#&gt; 3577     928580       9279            10513     10591 10469     28</span></span>
+<span><span class="co">#&gt; 3578     928524       9279            10520     10591 10469     28</span></span>
+<span><span class="co">#&gt; 3581     928626       9279            10524     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4110     928586       9279            10525     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4570     927199       9279            10538     10578 10637      7</span></span>
+<span><span class="co">#&gt; 4575     927111       9279            10528     10578 10637      7</span></span>
+<span><span class="co">#&gt; 5068     924906       9279            10538     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5371     927247       9279            10510     10578 10637      7</span></span>
+<span><span class="co">#&gt; 5372     927097       9279            10542     10578 10637      7</span></span>
+<span><span class="co">#&gt; 5373     927130       9279            10530     10578 10637      7</span></span>
+<span><span class="co">#&gt; 5375     927327       9279            10524     10578 10637      7</span></span>
+<span><span class="co">#&gt; 5387     926278       9279            10528     10460 10468      5</span></span>
+<span><span class="co">#&gt; 5393     926628       9279            10525     10460 10469      5</span></span>
+<span><span class="co">#&gt; 5403      17578       9279            10510     10460 10468      5</span></span>
+<span><span class="co">#&gt; 5415     924766       9279            10525     10460 10468      5</span></span>
+<span><span class="co">#&gt; 5429     925785       9279            10530     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5432     926287       9279            10520     10460 10469      5</span></span>
+<span><span class="co">#&gt; 5559     925453       9279            10524     10460 10469      5</span></span>
+<span><span class="co">#&gt; 5574     925496       9279            10513     10460 10468      5</span></span></code></pre></div>
 <p>There are a total of 60 variable combinations that include our
 category of interest. Note that <code><a href="../reference/select_varid.html">select_varid()</a></code> also allows
 selections by including other <code>ccmugs</code> to be more specific.
@@ -674,632 +313,130 @@ Let’s inspect the variables in a more human-readable format:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">variables_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_variables.html">get_variables</a></span><span class="op">(</span></span>
 <span>  rms <span class="op">=</span> <span class="va">rem</span>,</span>
-<span>  ids <span class="op">=</span> <span class="va">variables</span><span class="op">$</span><span class="va">variableId</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">variables_text</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">variables_text</span><span class="op">$</span><span class="va">classification</span>, <span class="va">variables_text</span><span class="op">$</span><span class="va">measure</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="2%">
-<col width="9%">
-<col width="7%">
-<col width="12%">
-<col width="24%">
-<col width="18%">
-<col width="11%">
-<col width="13%">
-</colgroup>
-<thead><tr class="header">
-<th align="left"></th>
-<th align="right">variable_id</th>
-<th align="left">reporting</th>
-<th align="left">category</th>
-<th align="left">classification</th>
-<th align="left">measure</th>
-<th align="left">gas</th>
-<th align="left">unit</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">19</td>
-<td align="right">927370</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">10</td>
-<td align="right">928580</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CO₂</td>
-<td align="left">t/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">54</td>
-<td align="right">928896</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CH₄</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="even">
-<td align="left">59</td>
-<td align="right">928872</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Implied emission factor</td>
-<td align="left">N₂O</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">27</td>
-<td align="right">925496</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">35</td>
-<td align="right">926583</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">47</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">49</td>
-<td align="right">926374</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">14</td>
-<td align="right">927427</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">12</td>
-<td align="right">928524</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CO₂</td>
-<td align="left">t/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">57</td>
-<td align="right">928873</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Implied emission factor</td>
-<td align="left">N₂O</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="even">
-<td align="left">58</td>
-<td align="right">928966</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CH₄</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">7</td>
-<td align="right">926637</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">20</td>
-<td align="right">926287</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">31</td>
-<td align="right">926785</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">42</td>
-<td align="right">200185</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">18</td>
-<td align="right">927327</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">11</td>
-<td align="right">928626</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CO₂</td>
-<td align="left">t/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">51</td>
-<td align="right">928708</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Implied emission factor</td>
-<td align="left">N₂O</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="even">
-<td align="left">53</td>
-<td align="right">928864</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CH₄</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">6</td>
-<td align="right">925469</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">21</td>
-<td align="right">924937</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">28</td>
-<td align="right">925453</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">43</td>
-<td align="right">200186</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">33</td>
-<td align="right">927449</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">2</td>
-<td align="right">928586</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CO₂</td>
-<td align="left">t/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">56</td>
-<td align="right">928849</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Implied emission factor</td>
-<td align="left">N₂O</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="even">
-<td align="left">60</td>
-<td align="right">928909</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CH₄</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">3</td>
-<td align="right">926628</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">9</td>
-<td align="right">924766</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">23</td>
-<td align="right">926275</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">45</td>
-<td align="right">200187</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">32</td>
-<td align="right">927111</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">13</td>
-<td align="right">928544</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CO₂</td>
-<td align="left">t/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">52</td>
-<td align="right">928803</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Implied emission factor</td>
-<td align="left">CH₄</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="even">
-<td align="left">55</td>
-<td align="right">928813</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Implied emission factor</td>
-<td align="left">N₂O</td>
-<td align="left">kg/TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">4</td>
-<td align="right">926278</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">24</td>
-<td align="right">926309</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">39</td>
-<td align="right">926280</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">46</td>
-<td align="right">200188</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">16</td>
-<td align="right">927130</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">29</td>
-<td align="right">925785</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">37</td>
-<td align="right">924993</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">38</td>
-<td align="right">925125</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">40</td>
-<td align="right">200189</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">34</td>
-<td align="right">927199</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">924906</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">5</td>
-<td align="right">925435</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">41</td>
-<td align="right">200190</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">50</td>
-<td align="right">925688</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">15</td>
-<td align="right">927097</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="even">
-<td align="left">22</td>
-<td align="right">926180</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">25</td>
-<td align="right">926080</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">36</td>
-<td align="right">926297</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">48</td>
-<td align="right">200191</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">17</td>
-<td align="right">927247</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Fuel Consumption</td>
-<td align="left">No gas</td>
-<td align="left">TJ</td>
-</tr>
-<tr class="odd">
-<td align="left">8</td>
-<td align="right">17578</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CH₄</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">26</td>
-<td align="right">94409</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">N₂O</td>
-<td align="left">kt</td>
-</tr>
-<tr class="odd">
-<td align="left">30</td>
-<td align="right">173310</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">CO₂</td>
-<td align="left">kt</td>
-</tr>
-<tr class="even">
-<td align="left">44</td>
-<td align="right">715050</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-</tbody>
-</table>
+<span>  variable_id <span class="op">=</span> <span class="va">variables</span><span class="op">$</span><span class="va">variableId</span><span class="op">)</span></span>
+<span><span class="va">variables_text</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">variables_text</span><span class="op">$</span><span class="va">classification</span>, <span class="va">variables_text</span><span class="op">$</span><span class="va">measure</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt;    variableId      categoryId                classificationId</span></span>
+<span><span class="co">#&gt; 43     927370 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 48     928580 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 56     928872 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 58     928896 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 4      200184 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 21     925496 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 32     926374 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 33     926583 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 44     927427 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 46     928524 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 57     928873 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 60     928966 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 5      200185 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 29     926287 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 35     926637 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 36     926785 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 42     927327 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 50     928626 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 51     928708 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 55     928864 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 6      200186 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 15     924937 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 19     925453 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 20     925469 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 45     927449 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 49     928586 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 54     928849 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 59     928909 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 7      200187 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 13     924766 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 26     926275 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 34     926628 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 38     927111 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 47     928544 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 52     928803 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 53     928813 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 8      200188 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 27     926278 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 28     926280 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 31     926309 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 39     927130 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 9      200189 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 16     924993 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 17     925125 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 23     925785 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 40     927199 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 10     200190 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 14     924906 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 18     925435 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 22     925688 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 37     927097 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 11     200191 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 24     926080 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 25     926180 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 30     926297 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 41     927247 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt; 1       17578 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt; 2       94409 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt; 3      173310 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt; 12     715050 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt;                  measureId          gasId            unitId reporting</span></span>
+<span><span class="co">#&gt; 43        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 48 Implied emission factor            CO₂              t/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 56 Implied emission factor            N₂O             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 58 Implied emission factor            CH₄             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 4   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 21  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 32  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 33  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 44        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 46 Implied emission factor            CO₂              t/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 57 Implied emission factor            N₂O             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 60 Implied emission factor            CH₄             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 5   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 29  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 35  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 36  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 42        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 50 Implied emission factor            CO₂              t/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 51 Implied emission factor            N₂O             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 55 Implied emission factor            CH₄             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 6   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 15  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 19  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 20  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 45        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 49 Implied emission factor            CO₂              t/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 54 Implied emission factor            N₂O             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 59 Implied emission factor            CH₄             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 7   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 13  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 26  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 34  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 38        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 47 Implied emission factor            CO₂              t/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 52 Implied emission factor            CH₄             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 53 Implied emission factor            N₂O             kg/TJ  annexOne</span></span>
+<span><span class="co">#&gt; 8   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 27  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 28  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 31  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 39        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 9   Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 16  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 17  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 23  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 40        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 10  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 14  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 18  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 22  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 37        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 11  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 24  Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 25  Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 30  Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 41        Fuel Consumption         No gas                TJ  annexOne</span></span>
+<span><span class="co">#&gt; 1   Net emissions/removals            CH₄                kt  annexOne</span></span>
+<span><span class="co">#&gt; 2   Net emissions/removals            N₂O                kt  annexOne</span></span>
+<span><span class="co">#&gt; 3   Net emissions/removals            CO₂                kt  annexOne</span></span>
+<span><span class="co">#&gt; 12  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span></code></pre></div>
 <p>Next, we filter for the desired measure
 <code>Net emissions/removals</code> and gas
 <code>Aggregate GHGs</code>:</p>
@@ -1307,121 +444,27 @@ Let’s inspect the variables in a more human-readable format:</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">var_ids</span> <span class="op">&lt;-</span> <span class="va">variables_text</span><span class="op">[</span><span class="va">variables_text</span><span class="op">$</span><span class="va">measure</span><span class="op">==</span><span class="st">"Net emissions/removals"</span> <span class="op">&amp;</span></span>
 <span>                 <span class="va">variables_text</span><span class="op">$</span><span class="va">gas</span><span class="op">==</span><span class="st">"Aggregate GHGs"</span>, <span class="op">]</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">var_ids</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="2%">
-<col width="9%">
-<col width="7%">
-<col width="12%">
-<col width="24%">
-<col width="17%">
-<col width="11%">
-<col width="13%">
-</colgroup>
-<thead><tr class="header">
-<th align="left"></th>
-<th align="right">variable_id</th>
-<th align="left">reporting</th>
-<th align="left">category</th>
-<th align="left">classification</th>
-<th align="left">measure</th>
-<th align="left">gas</th>
-<th align="left">unit</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">40</td>
-<td align="right">200189</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">41</td>
-<td align="right">200190</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Fossil Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">42</td>
-<td align="right">200185</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Diesel Oil</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">43</td>
-<td align="right">200186</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gaseous Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">44</td>
-<td align="right">715050</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Total for category</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">45</td>
-<td align="right">200187</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Gasoline</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">46</td>
-<td align="right">200188</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Liquefied Petroleum Gases (LPG)</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="even">
-<td align="left">47</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-<tr class="odd">
-<td align="left">48</td>
-<td align="right">200191</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Other Liquid Fuels</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-</tr>
-</tbody>
-</table>
+<span><span class="va">var_ids</span></span>
+<span><span class="co">#&gt;    variableId      categoryId                classificationId</span></span>
+<span><span class="co">#&gt; 4      200184 1.A.3.b.i  Cars                         Biomass</span></span>
+<span><span class="co">#&gt; 5      200185 1.A.3.b.i  Cars                      Diesel Oil</span></span>
+<span><span class="co">#&gt; 6      200186 1.A.3.b.i  Cars                   Gaseous Fuels</span></span>
+<span><span class="co">#&gt; 7      200187 1.A.3.b.i  Cars                        Gasoline</span></span>
+<span><span class="co">#&gt; 8      200188 1.A.3.b.i  Cars Liquefied Petroleum Gases (LPG)</span></span>
+<span><span class="co">#&gt; 9      200189 1.A.3.b.i  Cars                    Liquid Fuels</span></span>
+<span><span class="co">#&gt; 10     200190 1.A.3.b.i  Cars              Other Fossil Fuels</span></span>
+<span><span class="co">#&gt; 11     200191 1.A.3.b.i  Cars              Other Liquid Fuels</span></span>
+<span><span class="co">#&gt; 12     715050 1.A.3.b.i  Cars              Total for category</span></span>
+<span><span class="co">#&gt;                 measureId          gasId            unitId reporting</span></span>
+<span><span class="co">#&gt; 4  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 5  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 6  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 7  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 8  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 9  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 10 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 11 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 12 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span></code></pre></div>
 <p>All relevant information (e.g., units, type of gas) are provided
 here. In addition, unit conversion factors can be identified by looking
 up relevant source and target units in <code>rem$units$units</code> and
@@ -1437,307 +480,81 @@ cross-referencing them in <code>rem$units$annexOne</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flex_query.html">flex_query</a></span><span class="op">(</span></span>
 <span>  <span class="va">rem</span>,</span>
-<span>  variable_ids <span class="op">=</span> <span class="va">var_ids</span><span class="op">$</span><span class="va">variable_id</span>,</span>
+<span>  variable_ids <span class="op">=</span> <span class="va">var_ids</span><span class="op">$</span><span class="va">variableId</span>,</span>
 <span>  party_ids <span class="op">=</span> <span class="va">parties</span><span class="op">$</span><span class="va">id</span>,</span>
 <span>  year_ids <span class="op">=</span> <span class="va">years</span><span class="op">$</span><span class="va">id</span>,</span>
 <span>  pretty <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="5%">
-<col width="4%">
-<col width="8%">
-<col width="6%">
-<col width="10%">
-<col width="10%">
-<col width="15%">
-<col width="10%">
-<col width="12%">
-<col width="8%">
-<col width="8%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">parties</th>
-<th align="left">years</th>
-<th align="right">variable_id</th>
-<th align="left">reporting</th>
-<th align="left">category</th>
-<th align="left">classification</th>
-<th align="left">measure</th>
-<th align="left">gas</th>
-<th align="left">unit</th>
-<th align="right">number_value</th>
-<th align="left">string_value</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">1990</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">1991</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">1992</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">1993</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">1994</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">1995</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">33.78233</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">1996</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">46.03468</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">1997</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">79.19863</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">1998</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">82.90973</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">1999</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">109.39233</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">2000</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">261.02488</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">2001</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">389.07220</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">2002</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">512.62435</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">2003</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">793.73382</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">2004</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">1193.50417</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">2005</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">2614.46296</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">2006</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">4668.01095</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">2007</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">5080.86875</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Germany</td>
-<td align="left">2008</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">4435.05037</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Germany</td>
-<td align="left">2009</td>
-<td align="right">200184</td>
-<td align="left">annexOne</td>
-<td align="left">1.A.3.b.i Cars</td>
-<td align="left">Biomass</td>
-<td align="left">Net emissions/removals</td>
-<td align="left">Aggregate GHGs</td>
-<td align="left">kt CO₂ equivalent</td>
-<td align="right">4446.86238</td>
-<td align="left">NA</td>
-</tr>
-</tbody>
-</table>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    parties years variableId      categoryId classificationId</span></span>
+<span><span class="co">#&gt; 1  Germany  1990     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 2  Germany  1991     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 3  Germany  1992     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 4  Germany  1993     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 5  Germany  1994     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 6  Germany  1995     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 7  Germany  1996     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 8  Germany  1997     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 9  Germany  1998     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 10 Germany  1999     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 11 Germany  2000     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 12 Germany  2001     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 13 Germany  2002     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 14 Germany  2003     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 15 Germany  2004     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 16 Germany  2005     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 17 Germany  2006     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 18 Germany  2007     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 19 Germany  2008     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt; 20 Germany  2009     200184 1.A.3.b.i  Cars          Biomass</span></span>
+<span><span class="co">#&gt;                 measureId          gasId            unitId reporting</span></span>
+<span><span class="co">#&gt; 1  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 2  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 3  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 4  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 5  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 6  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 7  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 8  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 9  Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 10 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 11 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 12 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 13 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 14 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 15 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 16 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 17 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 18 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 19 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt; 20 Net emissions/removals Aggregate GHGs kt CO₂ equivalent  annexOne</span></span>
+<span><span class="co">#&gt;    number_value string_value</span></span>
+<span><span class="co">#&gt; 1            NA           NA</span></span>
+<span><span class="co">#&gt; 2            NA           NA</span></span>
+<span><span class="co">#&gt; 3            NA           NA</span></span>
+<span><span class="co">#&gt; 4            NA           NA</span></span>
+<span><span class="co">#&gt; 5            NA           NA</span></span>
+<span><span class="co">#&gt; 6      33.78233         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7      46.03468         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 8      79.19863         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 9      82.90973         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 10    109.39233         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 11    261.02488         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 12    389.07220         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 13    512.62435         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 14    793.73382         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 15   1193.50417         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 16   2614.46296         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 17   4668.01095         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 18   5080.86875         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 19   4435.05037         &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 20   4446.86238         &lt;NA&gt;</span></span></code></pre></div>
 <p>See results:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span>nm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"Id"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'[^0-9]'</span>, <span class="st">""</span>, <span class="va">result</span><span class="op">$</span><span class="va">years</span>, perl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">years</span>, y <span class="op">=</span> <span class="va">number_value</span>, color <span class="op">=</span> <span class="va">parties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1753,6 +570,7 @@ cross-referencing them in <code>rem$units$annexOne</code>.</p>
 <span><span class="va">`%nin%`</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Negate</a></span><span class="op">(</span><span class="va">`%in%`</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span>nm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"Id"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'[^0-9]'</span>, <span class="st">""</span>, <span class="va">years</span>, perl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">classification</span> <span class="op">%nin%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Total for category'</span>, <span class="st">'Gaseous Fuels'</span>, <span class="st">'Liquid Fuels'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">parties</span>, <span class="va">years</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -1775,47 +593,14 @@ cross-referencing them in <code>rem$units$annexOne</code>.</p>
 </h3>
 <p>Here we will exploit the Flexible Queries API to download
 <code>extData</code>, focusing on the World Bank population data.</p>
-<table class="table">
-<colgroup>
-<col width="7%">
-<col width="17%">
-<col width="37%">
-<col width="37%">
-</colgroup>
-<thead><tr class="header">
-<th align="right">id</th>
-<th align="left">level_1</th>
-<th align="left">level_2</th>
-<th align="left">name</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">10501</td>
-<td align="left">External Data</td>
-<td align="left">NA</td>
-<td align="left">External Data</td>
-</tr>
-<tr class="even">
-<td align="right">10502</td>
-<td align="left">External Data</td>
-<td align="left">Country Area</td>
-<td align="left">Country Area</td>
-</tr>
-<tr class="odd">
-<td align="right">10503</td>
-<td align="left">External Data</td>
-<td align="left">Gross Domestic Product - GDP</td>
-<td align="left">Gross Domestic Product - GDP</td>
-</tr>
-<tr class="even">
-<td align="right">10504</td>
-<td align="left">External Data</td>
-<td align="left">Population</td>
-<td align="left">Population</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 4</span></span></span>
+<span><span class="co">#&gt;      id level_1       level_2                      name                        </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="text-decoration: underline;">10</span>501 External Data <span style="color: #BB0000;">NA</span>                           External Data               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> <span style="text-decoration: underline;">10</span>502 External Data Country Area                 Country Area                </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> <span style="text-decoration: underline;">10</span>503 External Data Gross Domestic Product - GDP Gross Domestic Product - GDP</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> <span style="text-decoration: underline;">10</span>504 External Data Population                   Population</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># from extData - select Population Category:</span></span>
 <span><span class="va">category_mask</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'Population'</span>, <span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">extData</span><span class="op">$</span><span class="va">name</span>, fixed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">category</span> <span class="op">&lt;-</span> <span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">extData</span><span class="op">[</span><span class="va">category_mask</span>, <span class="op">]</span></span>
@@ -1826,10 +611,10 @@ cross-referencing them in <code>rem$units$annexOne</code>.</p>
 <span></span>
 <span><span class="co"># check and confirm desired variable is correct</span></span>
 <span><span class="fu"><a href="../reference/get_variables.html">get_variables</a></span><span class="op">(</span>rms <span class="op">=</span> <span class="va">rem</span>, <span class="va">var_ids</span><span class="op">$</span><span class="va">variableId</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   variable_id reporting   category     classification          measure    gas</span></span>
-<span><span class="co">#&gt; 1      188991   extData Population Total for category Total population No gas</span></span>
-<span><span class="co">#&gt;        unit</span></span>
-<span><span class="co">#&gt; 1 thousands</span></span>
+<span><span class="co">#&gt;   variableId categoryId   classificationId        measureId  gasId    unitId</span></span>
+<span><span class="co">#&gt; 1     188991 Population Total for category Total population No gas thousands</span></span>
+<span><span class="co">#&gt;   reporting</span></span>
+<span><span class="co">#&gt; 1   extData</span></span>
 <span></span>
 <span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flex_query.html">flex_query</a></span><span class="op">(</span></span>
 <span>  rms <span class="op">=</span> <span class="va">rem</span>,</span>
@@ -1839,6 +624,7 @@ cross-referencing them in <code>rem$units$annexOne</code>.</p>
 <span></span>
 <span></span>
 <span><span class="va">population</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span>nm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"Id"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>years <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'[^0-9]'</span>, <span class="st">""</span>, <span class="va">years</span>, perl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">years</span>, y <span class="op">=</span> <span class="va">number_value</span>, color <span class="op">=</span> <span class="va">parties</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1857,7 +643,7 @@ on Climate Change issues, as given in <a href="https://expertenrat-klima.de/cont
 4, p. 220</a>. The data is from Table1.A(a)s1 of the National Inventory
 Report after UNFCCC, CRF-Category <em>1.A.1.a Public Electricity and
 Heat Production</em>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="co"># check</span></span>
@@ -1874,20 +660,20 @@ Heat Production</em>.</p>
 <span></span>
 <span><span class="co">#choose id:</span></span>
 <span><span class="va">var_id</span> <span class="op">&lt;-</span> <span class="va">cat1A1a_variables</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">classification</span> <span class="op">==</span> <span class="st">'Total for category'</span>,</span>
-<span>         <span class="va">gas</span> <span class="op">==</span> <span class="st">'Aggregate GHGs'</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">classificationId</span> <span class="op">==</span> <span class="st">'Total for category'</span>,</span>
+<span>         <span class="va">gasId</span> <span class="op">==</span> <span class="st">'Aggregate GHGs'</span></span>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">variable_id</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">variableId</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 1</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
-<span><span class="co">#&gt; $ variable_id    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 714972</span></span>
-<span><span class="co">#&gt; $ reporting      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "annexOne"</span></span>
-<span><span class="co">#&gt; $ category       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1.A.1.a  Public Electricity and Heat Production"</span></span>
-<span><span class="co">#&gt; $ classification <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Total for category"</span></span>
-<span><span class="co">#&gt; $ measure        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Net emissions/removals"</span></span>
-<span><span class="co">#&gt; $ gas            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Aggregate GHGs"</span></span>
-<span><span class="co">#&gt; $ unit           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "kt CO₂ equivalent"</span></span>
+<span><span class="co">#&gt; $ variableId       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 714972</span></span>
+<span><span class="co">#&gt; $ categoryId       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "1.A.1.a  Public Electricity and Heat Production"</span></span>
+<span><span class="co">#&gt; $ classificationId <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Total for category"</span></span>
+<span><span class="co">#&gt; $ measureId        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Net emissions/removals"</span></span>
+<span><span class="co">#&gt; $ gasId            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Aggregate GHGs"</span></span>
+<span><span class="co">#&gt; $ unitId           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "kt CO₂ equivalent"</span></span>
+<span><span class="co">#&gt; $ reporting        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "annexOne"</span></span>
 <span></span>
 <span><span class="co"># download data</span></span>
 <span><span class="va">cat1A1a_agg_ghg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/flex_query.html">flex_query</a></span><span class="op">(</span></span>
@@ -1905,13 +691,24 @@ Heat Production</em>.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">years</span>, y <span class="op">=</span> <span class="va">number_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span>, color <span class="op">=</span> <span class="st">'steelblue'</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">'steelblue'</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">'GHG-Emissions [%s]'</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cat1A1a_agg_ghg</span><span class="op">$</span><span class="va">unit</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cat1A1a_agg_ghg</span><span class="op">$</span><span class="va">category</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">'GHG-Emissions [%s]'</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cat1A1a_agg_ghg</span><span class="op">$</span><span class="va">unitId</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cat1A1a_agg_ghg</span><span class="op">$</span><span class="va">categoryId</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'top'</span>, legend.direction <span class="op">=</span> <span class="st">'horizontal'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 rows containing missing values (`geom_point()`).</span></span></code></pre></div>
-<p><img src="api-use_files/figure-html/fig-energy-1.png" width="100%"></p>
+<p><img src="api-use_files/figure-html/fig-energy-1.png" width="100%">
+## Duplicates</p>
+<p>Several duplicate values… shown in</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">duplicate_variableIds</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; annexOne288 annexOne295 annexOne298 annexOne301 annexOne344 </span></span>
+<span><span class="co">#&gt;         318       49161       88269       92599      789990</span></span></code></pre></div>
+<p>In case of duplicate variables, all data is downloaded. AFAIK
+numbrevalues are identical for duplicated variables, just differ in
+one/more ccmug id’s. Check and clean data afterwards to only include
+wanted obs.. Will develop function ..</p>
 </div>
 </div>
 <div class="section level2">
@@ -1921,7 +718,7 @@ Heat Production</em>.</p>
 <h3 id="parties">Parties<a class="anchor" aria-label="anchor" href="#parties"></a>
 </h3>
 <p>Parties are stored in <code>rem$parties</code></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># up to 5th entry on parties</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">parties</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -2024,7 +821,7 @@ Heat Production</em>.</p>
 <h3 id="years">Years<a class="anchor" aria-label="anchor" href="#years"></a>
 </h3>
 <p>Years are stored in <code>rem$years</code> for respective</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">years</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -2046,7 +843,7 @@ Heat Production</em>.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">years</span><span class="op">$</span><span class="va">annexOne</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -2199,7 +996,7 @@ Compilation and Accounting Data. The tables for each category have an
 sub-categories exist, additional columns using the name
 <code>level_x</code> (<code>x</code> = nesting depth) show the category
 hierarchy.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -2224,7 +1021,7 @@ hierarchy.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># up to 5th entry on parties</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">annexOne</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -2379,7 +1176,7 @@ CO₂</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">categories</span><span class="op">$</span><span class="va">annexOne</span>, <span class="fl">88</span><span class="op">:</span><span class="fl">94</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -2507,7 +1304,7 @@ CRF-Categories:</p>
 <li>LULUCF/LUCF:</li>
 <li>LULUCF/LUCF activities</li>
 </ul>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">classification</span><span class="op">$</span><span class="va">annexOne</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -2563,7 +1360,7 @@ CRF-Categories:</p>
 <h4 id="measures">Measures<a class="anchor" aria-label="anchor" href="#measures"></a>
 </h4>
 <p>Measures include:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">measures</span><span class="op">$</span><span class="va">annexOne</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2648,7 +1445,7 @@ CRF-Categories:</p>
 <h4 id="gasses">Gasses<a class="anchor" aria-label="anchor" href="#gasses"></a>
 </h4>
 <p>Gasses include:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">gas</span><span class="op">$</span><span class="va">annexOne</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2705,7 +1502,7 @@ CRF-Categories:</p>
 <h4 id="units">Units<a class="anchor" aria-label="anchor" href="#units"></a>
 </h4>
 <p>Units include:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rem</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">units</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
