@@ -1,9 +1,11 @@
+rem <- rem_init()
+
 find_id(rem$years, 52)
 get_names(rem$years, 52)
 
 
 rem$categories$extData
-select_varid(rem, 188990)
+select_varid(rem$variables$annexOne, category_id = 10504)
 
 
 res <- rem$.req$post(
@@ -12,6 +14,24 @@ res <- rem$.req$post(
     partyIds = list(3),
     yearIds = list(33),
     variableIds = list(188990)
+  ),
+  encode = 'json'
+)
+res <- rem$.req$post(
+  path = 'api/records/flexible-queries/',
+  body = list(
+    partyIds = list(3),
+    yearIds = list(33),
+    variableIds = list(17344)
+  ),
+  encode = 'json'
+)
+res <- rem$.req$post(
+  path = 'api/records/flexible-queries/',
+  body = list(
+    partyIds = list(3),
+    yearIds = list(33),
+    variableIds = list(78278)
   ),
   encode = 'json'
 )
@@ -31,11 +51,11 @@ cat1A1a_variables <- get_variables(
 
 #choose id:
 var_id <- cat1A1a_variables %>%
-  filter(classification == 'Total for category',
-         gas == 'Aggregate GHGs'
+  filter(classificationId == 'Total for category',
+         gasId == 'Aggregate GHGs'
   ) %>%
   glimpse() %>%
-  pull(variable_id)
+  pull(variableId)
 
 cat1A1a_agg_ghg <- flex_query(
   rms = rem,
@@ -50,7 +70,7 @@ cat1A1a_agg_ghg <- flex_query(
 
 ## categories:
 
-libarry(dplyr)
+library(dplyr)
 # library(remis)
 rem <- rem_init()
 
@@ -73,14 +93,16 @@ variables <- select_varid(vars =
   category_id = cat_level6$id,
   classification_id = class_emissions$id,
   measure_id = meas_emissions$id,
-  gas_id = gas_emissions$id)
+  gas_id = gas_emissions$id,
+  union = TRUE)
 
+variables_text <- get_variables(rem, variables)
 
-vars <- variables[1:212,]
+vars <- variables[1:52,]
 nrow_vars <- nrow(vars)
 
 
-batch_size <- 50
+batch_size <- 10
 start_idx <- seq(1, nrow_vars, by = batch_size)
 
 n_batches <- length(start_idx)
@@ -100,13 +122,67 @@ for(idx in seq_along(start_idx)){
   batches[idx] <-
     list(flex_query(
       rem,
-      variable_ids = vars$variableId[2],
+      variable_ids = vars$variableId[st:en],
       party_ids = 13, # germany,
       year_ids = 62 # last inventory year
       ))
+  Sys.sleep(.5)
 }
 
 overview <- flex_query()
 # check why not working...
 
-grepl(rms$extData$id[4], rms, fixed = TRUE)
+grepl(rem$categories$extData$id[3], rem)
+
+
+
+
+
+select_varid(vars = rem$variables$annexOne,
+             category_id = 9560,
+             classification_id = 10510,
+             measure_id = 10460,
+             gas_id = 10469,
+             unit_id = 5) %>%
+  # dplyr::glimpse() %>%
+  get_variables(rem, .)
+
+
+select_varid(vars = rem$variables$annexOne,
+             category_id = 9560,
+             classification_id = 10827,
+             measure_id = 10460,
+             gas_id = 10469,
+             unit_id = 5) %>%
+  dplyr::glimpse() %>%
+  get_variables(rem, .)
+
+10450
+10510
+10460
+10471
+5
+
+
+select_varid(vars = rem$variables$annexOne,
+             category_id = 10450,
+             classification_id = 10510,
+             measure_id = 10460,
+             gas_id = 10471,
+             unit_id = 5) %>%
+  dplyr::glimpse() %>%
+  get_variables(rem, .)
+10450
+10820
+10460
+10471
+5
+
+select_varid(vars = rem$variables$annexOne,
+             category_id = 10450,
+             classification_id = 10820,
+             measure_id = 10460,
+             gas_id = 10471,
+             unit_id = 5) %>%
+  dplyr::glimpse() %>%
+  get_variables(rem, .)

@@ -94,7 +94,7 @@ Here we choose Germany and France.
 
 parties_mask <- rem$parties$parties_code %in% c('DEU', 'FRA')
 parties <- rem$parties[parties_mask, c('id', 'name', 'categoryCode')]
-knitr::kable(parties)
+parties
 
 ```
 Note, that both parties are in Annex I.
@@ -105,7 +105,7 @@ We will select all years from 1990 to the latest inventory year (2020).
 ```{r example-years}
 # base year has id = 0
 years <- rem$years$annexOne[rem$years$annexOne$id != 0, ]
-knitr::kable(years)
+years
 
 
 ```
@@ -127,7 +127,7 @@ Therefore, we begin with *category* as our starting point.
 
 category_mask <- grepl('1.A.3.b.i  Cars', rem$categories$annexOne$name)
 category <- rem$categories$annexOne[category_mask, ]
-knitr::kable(as.data.frame(t(category)))
+as.data.frame(t(category))
 
 ```
 The table above also highlights the nesting structure throughout the CRF-Category tree.
@@ -138,7 +138,7 @@ Next, find appropriate variables (i.e. combination of *ccmug*'s) that contain ou
 variables <- select_varid(
   vars = rem$variables$annexOne,
   category_id = category$id)
-knitr::kable(head(variables, 20))
+head(variables, 20)
 ```
 There are a total of `r nrow(variables)` variable combinations that include our category of interest.
 Note that `select_varid()` also allows selections by including other `ccmugs` to be more specific.
@@ -147,8 +147,8 @@ Let's inspect the variables in a more human-readable format:
 ```{r example-variablestext}
 variables_text <- get_variables(
   rms = rem,
-  ids = variables$variableId)
-knitr::kable(variables_text[order(variables_text$classification, variables_text$measure), ])
+  variable_id = variables$variableId)
+variables_text[order(variables_text$classification, variables_text$measure), ]
 
 ```
 
@@ -158,7 +158,7 @@ Next, we filter for the desired measure `Net emissions/removals` and gas `Aggreg
 
 var_ids <- variables_text[variables_text$measure=="Net emissions/removals" &
                  variables_text$gas=="Aggregate GHGs", ]
-knitr::kable(var_ids)
+var_ids
 
 ```
 
@@ -173,12 +173,12 @@ Queries using the Flexible Query API are done `flex_query()`, which uses the `.r
 ```{r example-query, eval = TRUE}
 result <- flex_query(
   rem,
-  variable_ids = var_ids$variable_id,
+  variable_ids = var_ids$variableId,
   party_ids = parties$id,
   year_ids = years$id,
   pretty = TRUE)
 
-knitr::kable(head(result, 20))
+head(result, 20)
 
 ```
 
@@ -188,6 +188,7 @@ See results:
 
 library(ggplot2)
 result %>%
+  setNames(nm = gsub("Id", "", names(.))) %>% 
   mutate(years = as.numeric(gsub('[^0-9]', "", result$years, perl = TRUE))) %>% 
   ggplot(aes(x = years, y = number_value, color = parties)) +
   geom_line() +
@@ -204,6 +205,7 @@ result %>%
 `%nin%` <- Negate(`%in%`)
 
 result %>% 
+  setNames(nm = gsub("Id", "", names(.))) %>% 
   mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
   filter(classification %nin% c('Total for category', 'Gaseous Fuels', 'Liquid Fuels')) %>% 
   group_by(parties, years) %>% 
@@ -227,7 +229,7 @@ result %>%
 Here we will exploit the Flexible Queries API to download `extData`, focusing on the World Bank population data.
 
 ```{r echo=FALSE}
-knitr::kable(rem$categories$extData)
+rem$categories$extData
 
 ```
 
@@ -251,6 +253,7 @@ population <- flex_query(
 
 
 population %>%
+  setNames(nm = gsub("Id", "", names(.))) %>% 
   mutate(years = as.numeric(gsub('[^0-9]', "", years, perl = TRUE))) %>% 
   ggplot(aes(x = years, y = number_value, color = parties)) +
   geom_line(linewidth = 1.5) +
@@ -284,11 +287,11 @@ cat1A1a_variables <- get_variables(
 
 #choose id:
 var_id <- cat1A1a_variables %>%
-  filter(classification == 'Total for category',
-         gas == 'Aggregate GHGs'
+  filter(classificationId == 'Total for category',
+         gasId == 'Aggregate GHGs'
   ) %>% 
   dplyr::glimpse() %>% 
-  dplyr::pull(variable_id)
+  dplyr::pull(variableId)
 
 # download data
 cat1A1a_agg_ghg <- flex_query(
@@ -306,14 +309,26 @@ cat1A1a_agg_ghg %>%
   ggplot(aes(x = years, y = number_value)) +
   geom_line(linewidth = 1, color = 'steelblue') +
   geom_point(color = 'steelblue', size = 3) +
-  labs(y = sprintf('GHG-Emissions [%s]', unique(cat1A1a_agg_ghg$unit)),
-       title = unique(cat1A1a_agg_ghg$category)) +
+  labs(y = sprintf('GHG-Emissions [%s]', unique(cat1A1a_agg_ghg$unitId)),
+       title = unique(cat1A1a_agg_ghg$categoryId)) +
   theme_minimal(base_size = 16) +
   theme(legend.position = 'top', legend.direction = 'horizontal')
 
 
 ```
+## Duplicates
 
+Several duplicate values... shown in
+
+```{r duplicates}
+
+head(rem$duplicate_variableIds, 5)
+
+```
+In case of duplicate variables, all data is downloaded. 
+AFAIK numbrevalues are identical for duplicated variables, just differ in one/more ccmug id's.
+Check and clean data afterwards to only include wanted obs..
+Will develop function ..
 
 ## Meta Overview
 

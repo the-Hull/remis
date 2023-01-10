@@ -81,6 +81,8 @@ rem_init <- function(base_url = meta$api_base_url){
 
   responses$.req <- req
 
+  variable_ids <- unlist(sapply(responses$variables, `[[`, 'variableId'))
+  responses$duplicate_variableIds <- variable_ids[duplicated(variable_ids)]
 
   return(responses)
 }
@@ -104,7 +106,10 @@ flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/recor
 
   rem_check(rms)
 
-  # check if any are null.. download all?
+
+
+
+  # check if any are null.. allow for "variable_ids = 'all'" then download all?
   # warn for large dl and ask to proceed with input y/n
   # add `warn_large` argument as flag, set to FALSE for headless systems
 
@@ -204,7 +209,7 @@ parse_raw <- function(rms, raw){
   # get years
   years <- get_names(rms$years, raw$yearId)
   # get text variables
-  variables <- get_variables(rms, raw$variable)
+  variables <- get_variables(rms, raw$variableId)
 
   out <- cbind(
     data.frame(parties = parties, years = years),
@@ -227,6 +232,7 @@ parse_raw <- function(rms, raw){
 #' @param classification_id integer
 #' @param measure_id integer
 #' @param gas_id integer
+#' @param unit_id integer
 #' @param union logical, for `TRUE` only return variables where **all** supplied ccmug's are represented,
 #'   for `FALSE` return every variable where any of the ccmug's is present.
 #'
@@ -240,6 +246,7 @@ select_varid <- function(
     classification_id = NULL,
     measure_id = NULL,
     gas_id = NULL,
+    unit_id = NULL,
     union = TRUE){
 
 
@@ -251,7 +258,8 @@ select_varid <- function(
     categoryId = category_id,
     classificationId = classification_id,
     measureId = measure_id,
-    gasId = gas_id)
+    gasId = gas_id,
+    unitId = unit_id)
 
   # if all entries are null, provide all vars to download everything
   # if any entry is non-null, limit to respective ids
@@ -288,6 +296,7 @@ select_varid <- function(
       vars_sub <- vars[rowSums(masks) == n_entries, ]
     }
 
+
     return(vars_sub)
   }
 
@@ -305,14 +314,23 @@ find_id <- function(rms, id, verbose = FALSE){
 
   nms <- c()
 
+  rms$duplicate_variableIds <- NULL
+
   # recurse through list and keep track of nesting
   while(!inherits(rms, 'integer')){
 
-    # grepl doesn't find all items in lists - unlist and clean names
-    nm <- names(unlist(rms))[grepl(id, unlist(rms))][1]
-    # unlisted items have form "colname00" or "colname.00"
-    # clean with regex
-    nm <- gsub("((?<=\\w)[.].+[0-9]+$)|([0-9]+$)", "", nm, perl = TRUE)
+    if(any(grepl('units', names(rms)))){
+
+      nm <- 'units'
+
+    } else {
+      # grepl doesn't find all items in lists - unlist and clean names
+      nm <- names(unlist(rms))[grepl(id, unlist(rms))][1]
+      # unlisted items have form "colname00" or "colname.00" or "colname.id00"
+      # or "colnameid00"
+      # clean with regex
+      nm <- gsub("((?<=\\w)[.].+[0-9]+$)|([0-9]+$)", "", nm, perl = TRUE)
+    }
     nms <- c(nms, nm)
     if(nm == 'id'){
       y <- rms
@@ -364,97 +382,90 @@ get_names <- function(rms, ids){
 #' Extract ccmgu information based on variableId
 #'
 #' @param rms list, `remis` object
-#' @param variables data.frame, containing (subsetted) variableIds and ccmug Ids
+#' @param variable_id integer variableIds
 #'
 #' @export
 #'
 #' @return data.frame containing integer variableId and text description of each
 #' corresponding ccmug id
-get_variables <- function(rms, variables){
+get_variables <- function(rms, variable_id){
 
   rem_check(rms)
 
   expected_cols <- c(
-    "variableId",
-    "categoryId",
-    "classificationId",
-    "measureId",
-    "gasId",
-    "unitId")
+    "variables" = "variableId",
+    "categories" = "categoryId",
+    "classification" = "classificationId",
+    "measures" = "measureId",
+    "gas" = "gasId",
+    "units" =  "unitId")
 
   stopifnot("Please provide a data.frame or tbl with the following names:
              variableId, categoryId, classificationId, measureId, gasId, unitId" =
                all(colnames(variables) %in% expected_cols & ncol(variables)==length(expected_cols)))
 
 
-  un_id <- unique(variables$variableId)
-  categories <- vector('character', length(un_id))
-  classification <- vector('character', length(un_id))
-  measures <- vector('character', length(un_id))
-  gas <- vector('character', length(un_id))
-  unit <- vector('character', length(un_id))
 
-  for(idx in seq_along(un_id)){
+  # create new and complete variable df based on variable ids
+  var_un_id <- unique(variable_id)
+  variables <- vector('list', length(var_un_id))
+
+  for(vid in var_un_id){
 
     # extData variables are duplicated, i.e. listed in both annexOne and nonAnnexOne
     # Variable tables.
     # if aon = length 2, we assume it is extData and choose annexOne for time being
-    aon <- names(rms$variables)[grepl(un_id[idx], rms$variables)]
+    aon <- names(rms[['variables']])[grepl(vid, rms[['variables']])]
 
-      isextData <- FALSE
+    isextData <- FALSE
     if(length(aon) == 2){
       isextData <- TRUE
       aon <- aon[1]
     }
+    vardf <- rms[['variables']][[aon]]
+    # note that variable id's are not unique
+    # thus vardf can have more than 1 row
+    vardf <- vardf[vardf[['variableId']] == vid, ]
 
+    if(isextData){
+      aon <- 'extData'
+    }
 
-
-
-    # loop over rows in variables
-
-
-
-
-
-    # get variable row
-    row_lgl <- rms$variables[[aon]][['variableId']] == un_id[idx]
-    row <- rms$variables[[aon]][row_lgl, ]
-
-
-    categories[idx] <- find_id(rms$categories, row$categoryId)
-    classification[idx] <- find_id(rms$classification, row$classificationId)
-    measures[idx] <- find_id(rms$measures, row$measureId)
-    gas[idx] <- find_id(rms$gas, row$gasId)
-    unit[idx] <- find_id(rms$units$units, row$unitId)
-
+    vardf[['reporting']] <- aon
+    variables[[vid]] <- vardf
   }
-
-  if(isextData){
-    aon <- 'extData'
-  }
-
-
-  lookup <-
-    data.frame(
-      variable_id = un_id,
-      reporting = aon,
-      category = categories,
-      classification = classification,
-      measure = measures,
-      gas = gas,
-      unit = unit
-    )
-
-  variables <- vector('list', length(ids))
-
-  for(idx in seq_along(ids)){
-
-    variables[idx] <- list(lookup[ids[idx] == lookup[['variable_id']], ])
-
-  }
-
   variables <- do.call(rbind, variables)
 
+
+  # lookup ccmugs and fill in variables
+  for(idcat in expected_cols[-1]){
+
+    un_id <- unique(variables[[idcat]])
+
+    for(uid in un_id){
+
+      id_pair <- setNames(
+        object = uid,
+        nm = find_id(
+          rms[[names(grep(idcat, expected_cols, value = TRUE))]],
+          uid
+          )
+        )
+
+      # replace all values in variable column
+      variables[[idcat]][variables[[idcat]] == id_pair]  <-  names(id_pair)
+
+    }
+
+
+
+  }
+
+
+  variables <- merge(x = data.frame(variableId = variable_id),
+        y = variables,
+        by = 'variableId',
+        all = TRUE)
     return(variables)
 
 }
@@ -470,6 +481,21 @@ rem_check <- function(rms){
 
 }
 
+duplicate_check <- function(rms, variable_id){
+
+  found_duplicates <- variable_id %in% rms$duplicate_variable
+
+  if(any(found_duplicates)){
+
+    s <- paste(variable_id[found_duplicates], collapse = ", ")
+
+
+    warning(
+      sprintf("Found duplicated variableId ids: %s.\n Proceed with Caution and check final results.\n", s))
+
+  }
+
+}
 
 
 
@@ -478,4 +504,5 @@ rem_check <- function(rms){
 
 # clean_years <- function(years){}
 
-
+# check vars - use select_varid / text variables to
+# filter final results!
