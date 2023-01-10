@@ -27,12 +27,19 @@ meta <- list(
 
 #' Initialize remis
 #'
+#' Get meta data for the Flex Query API and initialize the API.
+#'
 #' @param base_url character, base url for queries
 #'
 #' @return list
 #' @export
 #'
-#' @examples
+#' @examples \donttest{
+#' rem <- rem_init()
+#' names(rem)
+#'
+#'
+#' }
 rem_init <- function(base_url = meta$api_base_url){
 
   req <- crul::HttpClient$new(meta$api_base_url)
@@ -53,13 +60,14 @@ rem_init <- function(base_url = meta$api_base_url){
                         }
                       })
 
+  responses$parties <- flatten_parties(responses$parties)
 
-  # pre-process parties
-  responses$parties <- flatten_json(responses$parties)
-  ## clean names
-  names(responses$parties)[names(responses$parties) == 'parties_id'] <- 'id'
-  names(responses$parties)[names(responses$parties) == 'name'] <- 'name_code'
-  names(responses$parties)[names(responses$parties) == 'parties_name'] <- 'name'
+  # # pre-process parties
+  # responses$parties <- flatten_json(responses$parties)
+  # ## clean names
+  # names(responses$parties)[names(responses$parties) == 'parties_id'] <- 'id'
+  # names(responses$parties)[names(responses$parties) == 'name'] <- 'name_code'
+  # names(responses$parties)[names(responses$parties) == 'parties_name'] <- 'name'
 
   # pre-process nested values
   nested_obs <- c('categories', 'classification', 'measures')
@@ -79,10 +87,11 @@ rem_init <- function(base_url = meta$api_base_url){
       })
     })
 
-  responses$.req <- req
 
   variable_ids <- unlist(sapply(responses$variables, `[[`, 'variableId'))
   responses$duplicate_variableIds <- variable_ids[duplicated(variable_ids)]
+
+  responses$.req <- req
 
   return(responses)
 }
@@ -90,9 +99,30 @@ rem_init <- function(base_url = meta$api_base_url){
 
 
 
-#' Query UNFCCC DI with Flex Query API
+#' @title Access the UNFCCC Data Interface using the Flex Query API
 #'
-#' @param rms list, object from \link{`rem_init()`}
+#' @description The UNFCCC provides access to National Inventory Reporting (NIR),
+#'  World Bank and Compilation and Accounting (CAD) data through its Data Interface.
+#'  The flex query API allows programmatically downloading NIR and World Bank data.
+#'  See the API's documentation for additional information at [https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/data-interface-help](),
+#'  but note this refers to the GUI implementation.
+#'  The Flex Query API is made available in `remis` through `flex_query()`.
+#'  Downloads require a combination of `id` values for:
+#'  1. Parties
+#'  2. Years
+#'  3. Variables
+#'
+#'  The corresponding steps for querying are then:
+#'  1. Identify a party of interest in `[rem_init()]$parties`, and note whether it is Annex-One
+#'  or Non-Annex-One, and extract the `id`.
+#'  2. Choose (a subset of) years based on the Annex-One or Non-Annex-One party in `[rem_init()]$years`.
+#'  3. Select variables from `[rem_init()]$variables` based on based on the Annex-One or Non-Annex-One party.
+#'  A helper function [`select_varid()`] allows narrowing down based on reporting categories,
+#'  classifications, measures, units and gasses (*ccmug*'s). See [`select_varid()`] for more information.
+#'  Selected variables can be contextualized further by using [`get_variables()`], which
+#'  provides text representations of  *ccmug* id's.
+#'
+#' @param rms list, object from [`rem_init()`]
 #' @param variable_ids integer, ids of interest
 #' @param party_ids integer, ids of interest
 #' @param year_ids integer, ids of interest
@@ -102,6 +132,44 @@ rem_init <- function(base_url = meta$api_base_url){
 #'
 #' @return data.frame
 #' @export
+#' @examples
+#' \donttest{
+#'
+#' rem <- rem_init()
+#'
+#'
+# check
+#' cat1A1a <- rem$categories$annexOne[grepl("1.A.1.a.", rem$categories$annexOne$name), ]
+#'
+#' # manually choose id
+#' # cat1A1a$id[1]
+#'
+#' # get variables
+#' cat1A1a_variables <- get_variables(
+#'   rms = rem,
+#'   select_varid(
+#'   vars = rem$variables$annexOne,
+#'   cat1A1a$id[1])$variableId
+#' )
+#'
+#' #choose id:
+#' var_id <-
+#'   subset(cat1A1a_variables,
+#'   classificationId == 'Total for category',
+#'          gasId == 'Aggregate GHGs'
+#'   )$variableId
+#'
+#' # download data
+#' cat1A1a_agg_ghg <- flex_query(
+#'   rms = rem,
+#'   variable_ids = var_id,
+#'   party_ids = 13, # Germany
+#'   year_ids = rem$years$annexOne$id)
+#'
+#'
+#' }
+#'
+#'
 flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/records/flexible-queries/', pretty = TRUE){
 
   rem_check(rms)
@@ -360,8 +428,6 @@ find_id <- function(rms, id, verbose = FALSE){
 #' @param ids
 #'
 #' @return character, names corresponding to `ids`
-#'
-#' @examples
 get_names <- function(rms, ids){
 
 

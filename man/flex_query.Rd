@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{flex_query}
 \alias{flex_query}
-\title{Query UNFCCC DI with Flex Query API}
+\title{Access the UNFCCC Data Interface using the Flex Query API}
 \usage{
 flex_query(
   rms,
@@ -14,7 +14,7 @@ flex_query(
 )
 }
 \arguments{
-\item{rms}{list, object from \link{`rem_init()`}}
+\item{rms}{list, object from \code{\link[=rem_init]{rem_init()}}}
 
 \item{variable_ids}{integer, ids of interest}
 
@@ -31,5 +31,63 @@ descriptions instead of ids?}
 data.frame
 }
 \description{
-Query UNFCCC DI with Flex Query API
+The UNFCCC provides access to National Inventory Reporting (NIR),
+World Bank and Compilation and Accounting (CAD) data through its Data Interface.
+The flex query API allows programmatically downloading NIR and World Bank data.
+See the API's documentation for additional information at \url{https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/data-interface-help},
+but note this refers to the GUI implementation.
+The Flex Query API is made available in \code{remis} through \code{flex_query()}.
+Downloads require a combination of \code{id} values for:
+\enumerate{
+\item Parties
+\item Years
+\item Variables \\br
+The corresponding steps for querying are then:
+\item Identify a party of interest in \verb{[rem_init()]$parties}, and note whether it is Annex-One
+or Non-Annex-One, and extract the \code{id}.
+\item Choose (a subset of) years based on the Annex-One or Non-Annex-One party in \verb{[rem_init()]$years}.
+\item Select variables from \verb{[rem_init()]$variables} based on based on the Annex-One or Non-Annex-One party.
+A helper function \code{\link[=select_varid]{select_varid()}} allows narrowing down based on reporting categories,
+classifications, measures, units and gasses (\emph{ccmug}'s). See \code{\link[=select_varid]{select_varid()}} for more information.
+Selected variables can be contextualized further by using \code{\link[=get_variables]{get_variables()}}, which
+provides text representations of  \emph{ccmug} id's.
+}
+}
+\examples{
+\donttest{
+
+rem <- rem_init()
+
+
+cat1A1a <- rem$categories$annexOne[grepl("1.A.1.a.", rem$categories$annexOne$name), ]
+
+# manually choose id
+# cat1A1a$id[1]
+
+# get variables
+cat1A1a_variables <- get_variables(
+  rms = rem,
+  select_varid(
+  vars = rem$variables$annexOne,
+  cat1A1a$id[1])$variableId
+)
+
+#choose id:
+var_id <-
+  subset(cat1A1a_variables,
+  classificationId == 'Total for category',
+         gasId == 'Aggregate GHGs'
+  )$variableId
+
+# download data
+cat1A1a_agg_ghg <- flex_query(
+  rms = rem,
+  variable_ids = var_id,
+  party_ids = 13, # Germany
+  year_ids = rem$years$annexOne$id)
+
+
+}
+
+
 }

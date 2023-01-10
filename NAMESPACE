@@ -2,7 +2,6 @@
 
 export("%>%")
 export(flatten_dims)
-export(flatten_json)
 export(flex_query)
 export(get_variables)
 export(rem_init)
