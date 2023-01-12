@@ -189,7 +189,7 @@ See results:
 library(ggplot2)
 result %>%
   setNames(nm = gsub("Id", "", names(.))) %>% 
-  mutate(years = as.numeric(gsub('[^0-9]', "", result$years, perl = TRUE))) %>% 
+  mutate(years = as.numeric(gsub('[^0-9]', "", result$years, perl = TRUE))) %>%
   ggplot(aes(x = years, y = number_value, color = parties)) +
   geom_line() +
   facet_wrap(~classification, scales = "free_y") +
