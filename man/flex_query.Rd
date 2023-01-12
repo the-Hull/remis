@@ -14,25 +14,29 @@ flex_query(
 )
 }
 \arguments{
-\item{rms}{list, object from \code{\link[=rem_init]{rem_init()}}}
+\item{rms}{list, object from \code{\link[=rem_init]{rem_init()}}.}
 
-\item{variable_ids}{integer, ids of interest}
+\item{variable_ids}{numeric, \code{variableId}s of interest}
 
-\item{party_ids}{integer, ids of interest}
+\item{party_ids}{numeric, \code{partyId}s of interest}
 
-\item{year_ids}{integer, ids of interest}
+\item{year_ids}{numeric, \code{yearId}s of interest}
 
 \item{path}{character, default is 'api/records/flexible-queries/'}
 
-\item{pretty}{logical, should raw results transformed to feature text
-descriptions instead of ids?}
+\item{pretty}{logical, should \code{id}s be transformed to text
+descriptions?}
 }
 \value{
-data.frame
+data.frame with several \code{id} columns (either text or integers), and
+results as \code{number_value} or \code{string_value}.
 }
 \description{
 The UNFCCC provides access to National Inventory Reporting (NIR),
-World Bank and Compilation and Accounting (CAD) data through its Data Interface.
+World Bank and Compilation and Accounting (CAD) data through its \link{Data Interface}.
+Information on data availability is given \href{https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/notes-on-ghg-data}{here},
+with the most current observations from 27 September, 2022 (as of 12 January, 2023).
+
 The flex query API allows programmatically downloading NIR and World Bank data.
 See the API's documentation for additional information at \url{https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/data-interface-help},
 but note this refers to the GUI implementation.
@@ -41,14 +45,18 @@ Downloads require a combination of \code{id} values for:
 \enumerate{
 \item Parties
 \item Years
-\item Variables \\br
+\item Variables
+}
+
 The corresponding steps for querying are then:
+\enumerate{
 \item Identify a party of interest in \verb{[rem_init()]$parties}, and note whether it is Annex-One
 or Non-Annex-One, and extract the \code{id}.
 \item Choose (a subset of) years based on the Annex-One or Non-Annex-One party in \verb{[rem_init()]$years}.
 \item Select variables from \verb{[rem_init()]$variables} based on based on the Annex-One or Non-Annex-One party.
 A helper function \code{\link[=select_varid]{select_varid()}} allows narrowing down based on reporting categories,
-classifications, measures, units and gasses (\emph{ccmug}'s). See \code{\link[=select_varid]{select_varid()}} for more information.
+classifications, measures, units and gasses (\emph{ccmug}'s).
+See \code{\link[=select_varid]{select_varid()}} for more information.
 Selected variables can be contextualized further by using \code{\link[=get_variables]{get_variables()}}, which
 provides text representations of  \emph{ccmug} id's.
 }

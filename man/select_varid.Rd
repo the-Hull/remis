@@ -15,28 +15,44 @@ select_varid(
 )
 }
 \arguments{
-\item{vars}{data.frame of variable ids with corresponding cat/class/meas/gas ids}
+\item{vars}{data.frame of variable ids with corresponding cat/class/meas/gas ids.}
 
-\item{category_id}{integer}
+\item{category_id}{numeric,}
 
-\item{classification_id}{integer}
+\item{classification_id}{numeric,}
 
-\item{measure_id}{integer}
+\item{measure_id}{numeric,}
 
-\item{gas_id}{integer}
+\item{gas_id}{numeric,}
 
-\item{unit_id}{integer}
+\item{unit_id}{numeric, ids from \verb{[rem_init()]$} \code{categories}, \code{classification},
+\code{measures}, \code{gas}, \code{units}.}
 
 \item{union}{logical, for \code{TRUE} only return variables where \strong{all} supplied ccmug's are represented,
 for \code{FALSE} return every variable where any of the ccmug's is present.}
 }
 \value{
-data.frame with same dims of \code{vars} if no ids are supplied, or with rows
-resulting from union of ids, and columns of \code{vars}
+data.frame with same dims as \code{vars} if no ids are supplied, or with rows
+resulting from union/intersection of ids, and columns of \code{vars}
 }
 \description{
 Select variables based on categories, classifications, measures and gasses using
-ids. Variable selection is based on the intersection of supplied ids (\code{union = FALSE}) or union
+ids (\emph{ccmug}). Variable selection is based on the intersection of supplied ids (\code{union = FALSE}) or union
 (only select variables where all supplied ccmug's are present).
 If no ids are supplied, all variables are returned.
+}
+\examples{
+\donttest{
+
+rem <- rem_init()
+
+category_mask <- grepl('1.A.3.b.i  Cars', rem$categories$annexOne$name)
+category <- rem$categories$annexOne[category_mask, ]
+
+variables <- select_varid(
+  vars = rem$variables$annexOne,
+  category_id = category$id)
+head(variables, 20)
+
+}
 }

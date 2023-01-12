@@ -102,7 +102,10 @@ rem_init <- function(base_url = meta$api_base_url){
 #' @title Access the UNFCCC Data Interface using the Flex Query API
 #'
 #' @description The UNFCCC provides access to National Inventory Reporting (NIR),
-#'  World Bank and Compilation and Accounting (CAD) data through its Data Interface.
+#'  World Bank and Compilation and Accounting (CAD) data through its [Data Interface].
+#'  Information on data availability is given [here](https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/notes-on-ghg-data),
+#'  with the most current observations from 27 September, 2022 (as of 12 January, 2023).
+#'
 #'  The flex query API allows programmatically downloading NIR and World Bank data.
 #'  See the API's documentation for additional information at [https://unfccc.int/process-and-meetings/transparency-and-reporting/greenhouse-gas-data/data-interface-help](),
 #'  but note this refers to the GUI implementation.
@@ -118,19 +121,21 @@ rem_init <- function(base_url = meta$api_base_url){
 #'  2. Choose (a subset of) years based on the Annex-One or Non-Annex-One party in `[rem_init()]$years`.
 #'  3. Select variables from `[rem_init()]$variables` based on based on the Annex-One or Non-Annex-One party.
 #'  A helper function [`select_varid()`] allows narrowing down based on reporting categories,
-#'  classifications, measures, units and gasses (*ccmug*'s). See [`select_varid()`] for more information.
+#'  classifications, measures, units and gasses (*ccmug*'s).
+#'  See [`select_varid()`] for more information.
 #'  Selected variables can be contextualized further by using [`get_variables()`], which
 #'  provides text representations of  *ccmug* id's.
 #'
-#' @param rms list, object from [`rem_init()`]
-#' @param variable_ids integer, ids of interest
-#' @param party_ids integer, ids of interest
-#' @param year_ids integer, ids of interest
+#' @param rms list, object from [`rem_init()`].
+#' @param variable_ids numeric, `variableId`s of interest
+#' @param party_ids numeric, `partyId`s of interest
+#' @param year_ids numeric, `yearId`s of interest
 #' @param path character, default is 'api/records/flexible-queries/'
-#' @param pretty logical, should raw results transformed to feature text
-#' descriptions instead of ids?
+#' @param pretty logical, should `id`s be transformed to text
+#' descriptions?
 #'
-#' @return data.frame
+#' @return data.frame with several `id` columns (either text or integers), and
+#' results as `number_value` or `string_value`.
 #' @export
 #' @examples
 #' \donttest{
@@ -189,6 +194,26 @@ flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/recor
     )
 
 
+
+
+  bad_values <- unlist(
+    sapply(
+      body,
+      function(x){
+        length(x) == 0 |
+          any(sapply(x, is.null)) |
+                any(!sapply(x, is.numeric))}))
+
+
+  # noninteger_entries <- !unlist(sapply(body, is.integer))
+  # null_entries <- unlist(sapply(body, is.null))
+  # bad_values <- as.logical(null_entries + noninteger_entries)
+
+  if(any(bad_values)){
+
+    stop(sprintf("Please provide numeric id's for: %s", paste0(names(body)[bad_values], collapse = ", ")))
+
+  }
 
   result <- post_parse(rms = rms, path = path, body = body, pretty = pretty)
 
@@ -293,23 +318,38 @@ parse_raw <- function(rms, raw){
 #' Variable selector
 #'
 #' Select variables based on categories, classifications, measures and gasses using
-#' ids. Variable selection is based on the intersection of supplied ids (`union = FALSE`) or union
+#' ids (*ccmug*). Variable selection is based on the intersection of supplied ids (`union = FALSE`) or union
 #' (only select variables where all supplied ccmug's are present).
 #' If no ids are supplied, all variables are returned.
 #'
-#' @param vars data.frame of variable ids with corresponding cat/class/meas/gas ids
-#' @param category_id integer
-#' @param classification_id integer
-#' @param measure_id integer
-#' @param gas_id integer
-#' @param unit_id integer
+#' @param vars data.frame of variable ids with corresponding cat/class/meas/gas ids.
+#' @param category_id numeric,
+#' @param classification_id numeric,
+#' @param measure_id numeric,
+#' @param gas_id numeric,
+#' @param unit_id numeric, ids from `[rem_init()]$` `categories`, `classification`,
+#' `measures`, `gas`, `units`.
 #' @param union logical, for `TRUE` only return variables where **all** supplied ccmug's are represented,
 #'   for `FALSE` return every variable where any of the ccmug's is present.
 #'
+#'
+#' @return data.frame with same dims as `vars` if no ids are supplied, or with rows
+#' resulting from union/intersection of ids, and columns of `vars`
 #' @export
 #'
-#' @return data.frame with same dims of `vars` if no ids are supplied, or with rows
-#' resulting from union of ids, and columns of `vars`
+#' @examples \donttest{
+#'
+#' rem <- rem_init()
+#'
+#' category_mask <- grepl('1.A.3.b.i  Cars', rem$categories$annexOne$name)
+#' category <- rem$categories$annexOne[category_mask, ]
+#'
+#' variables <- select_varid(
+#'   vars = rem$variables$annexOne,
+#'   category_id = category$id)
+#' head(variables, 20)
+#'
+#' }
 select_varid <- function(
     vars,
     category_id = NULL,
@@ -450,15 +490,28 @@ get_names <- function(rms, ids){
 #' Extract ccmgu information based on variableId
 #'
 #' @param rms list, `remis` object
-#' @param variable_id integer variableIds
+#' @param variable_id numeric, `annexOne` or `nonAnnexOne` `variableId`s from `[rem_init()]$variables`
 #'
 #' @export
 #'
-#' @return data.frame containing integer variableId and text description of each
-#' corresponding ccmug id
+#' @return data.frame containing variableId and text description of each
+#' corresponding *ccmug* id
+#'
+#' @examples \donttest{
+#' rem <- rem_init()
+#'
+#' rem$variables$annexOne$variableId[25]
+#'
+#' get_variables(
+#'   rem,
+#'   rem$variables$annexOne$variableId[25])
+#'
+#'
+#' }
 get_variables <- function(rms, variable_id){
 
   rem_check(rms)
+
 
   expected_cols <- c(
     "variables" = "variableId",
@@ -468,9 +521,9 @@ get_variables <- function(rms, variable_id){
     "gas" = "gasId",
     "units" =  "unitId")
 
-  stopifnot("Please provide a data.frame or tbl with the following names:
-             variableId, categoryId, classificationId, measureId, gasId, unitId" =
-               all(colnames(variables) %in% expected_cols & ncol(variables)==length(expected_cols)))
+  # stopifnot("Please provide a data.frame or tbl with the following names:
+  #            variableId, categoryId, classificationId, measureId, gasId, unitId" =
+  #              all(colnames(variables) %in% expected_cols & ncol(variables)==length(expected_cols)))
 
 
 
@@ -500,7 +553,7 @@ get_variables <- function(rms, variable_id){
     }
 
     vardf[['reporting']] <- aon
-    variables[[vid]] <- vardf
+    variables[[as.character(vid)]] <- vardf
   }
   variables <- do.call(rbind, variables)
 
@@ -530,7 +583,7 @@ get_variables <- function(rms, variable_id){
   }
 
 
-  variables <- merge(x = data.frame(variableId = variable_id),
+  variables <- merge(x = data.frame(variableId = var_un_id),
         y = variables,
         by = 'variableId',
         all = TRUE)

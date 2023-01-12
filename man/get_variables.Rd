@@ -9,12 +9,25 @@ get_variables(rms, variable_id)
 \arguments{
 \item{rms}{list, \code{remis} object}
 
-\item{variable_id}{integer variableIds}
+\item{variable_id}{numeric, \code{annexOne} or \code{nonAnnexOne} \code{variableId}s from \verb{[rem_init()]$variables}}
 }
 \value{
-data.frame containing integer variableId and text description of each
-corresponding ccmug id
+data.frame containing variableId and text description of each
+corresponding \emph{ccmug} id
 }
 \description{
 Extract ccmgu information based on variableId
+}
+\examples{
+\donttest{
+rem <- rem_init()
+
+rem$variables$annexOne$variableId[25]
+
+get_variables(
+  rem,
+  rem$variables$annexOne$variableId[25])
+
+
+}
 }

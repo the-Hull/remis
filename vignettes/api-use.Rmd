@@ -318,11 +318,21 @@ cat1A1a_agg_ghg %>%
 ```
 ## Duplicates
 
-Several duplicate values... shown in
+There are several duplicate variable id's in the UNFCCC DI (n = `r length(rem$duplicate_variableIds)`). 
+Duplicated variables seem to only differ in one *ccmug* and have the identical number / string value.
+Duplicated variables are listed in `rem$duplicated_variableIds`.
+
+For example:
 
 ```{r duplicates}
+rem$variables$annexOne[rem$variables$annexOne$variableId == rem$duplicate_variableIds[2], ]
 
-head(rem$duplicate_variableIds, 5)
+get_variables(
+  rem, 
+  rem$variables$annexOne[
+    rem$variables$annexOne$variableId == rem$duplicate_variableIds[2], 
+    ]$variableId)
+
 
 ```
 In case of duplicate variables, all data is downloaded. 
