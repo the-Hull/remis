@@ -306,6 +306,8 @@ parse_raw <- function(rms, raw){
   # get text variables
   variables <- get_variables(rms, raw$variableId)
 
+  variables <- merge(x=raw[,'variableId', drop = FALSE], y=variables, by = 'variableId')
+
   out <- cbind(
     data.frame(parties = parties, years = years),
     variables,
