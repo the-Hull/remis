@@ -284,26 +284,26 @@ CRF-Category tree.</p>
 <span>  category_id <span class="op">=</span> <span class="va">category</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variables</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      variableId categoryId classificationId measureId gasId unitId</span></span>
-<span><span class="co">#&gt; 3376     928586       9279            10525     10591 10469     28</span></span>
-<span><span class="co">#&gt; 3377     928544       9279            10528     10591 10469     28</span></span>
-<span><span class="co">#&gt; 3380     928626       9279            10524     10591 10469     28</span></span>
-<span><span class="co">#&gt; 3382     928524       9279            10520     10591 10469     28</span></span>
-<span><span class="co">#&gt; 4224     928580       9279            10513     10591 10469     28</span></span>
-<span><span class="co">#&gt; 5053     927247       9279            10510     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5054     927199       9279            10538     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5069     927097       9279            10542     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5070     927130       9279            10530     10578 10637      7</span></span>
-<span><span class="co">#&gt; 6467     927427       9279            10520     10578 10637      7</span></span>
-<span><span class="co">#&gt; 6482     927327       9279            10524     10578 10637      7</span></span>
-<span><span class="co">#&gt; 6483     927370       9279            10513     10578 10637      7</span></span>
-<span><span class="co">#&gt; 6547     927111       9279            10528     10578 10637      7</span></span>
-<span><span class="co">#&gt; 7160     927449       9279            10525     10578 10637      7</span></span>
-<span><span class="co">#&gt; 9308     924906       9279            10538     10460 10471      5</span></span>
-<span><span class="co">#&gt; 9324     926628       9279            10525     10460 10469      5</span></span>
-<span><span class="co">#&gt; 9484     926278       9279            10528     10460 10468      5</span></span>
-<span><span class="co">#&gt; 9492      17578       9279            10510     10460 10468      5</span></span>
-<span><span class="co">#&gt; 9513     924766       9279            10525     10460 10468      5</span></span>
-<span><span class="co">#&gt; 9523     926287       9279            10520     10460 10469      5</span></span></code></pre></div>
+<span><span class="co">#&gt; 2327     926287       9279            10520     10460 10469      5</span></span>
+<span><span class="co">#&gt; 3632     926628       9279            10525     10460 10469      5</span></span>
+<span><span class="co">#&gt; 3650      17578       9279            10510     10460 10468      5</span></span>
+<span><span class="co">#&gt; 3662     924766       9279            10525     10460 10468      5</span></span>
+<span><span class="co">#&gt; 3679     925785       9279            10530     10460 10471      5</span></span>
+<span><span class="co">#&gt; 4075     928626       9279            10524     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4077     928524       9279            10520     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4078     928544       9279            10528     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4130     928580       9279            10513     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4191     928586       9279            10525     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4648     925435       9279            10538     10460 10468      5</span></span>
+<span><span class="co">#&gt; 4649     925469       9279            10524     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5087     926637       9279            10520     10460 10468      5</span></span>
+<span><span class="co">#&gt; 5108     924937       9279            10524     10460 10468      5</span></span>
+<span><span class="co">#&gt; 5575     173310       9279            10510     10460 10469      5</span></span>
+<span><span class="co">#&gt; 5586     925688       9279            10538     10460 10469      5</span></span>
+<span><span class="co">#&gt; 5593     926374       9279            10513     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5599     926785       9279            10520     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5604     924906       9279            10538     10460 10471      5</span></span>
+<span><span class="co">#&gt; 5958     927327       9279            10524     10578 10637      7</span></span></code></pre></div>
 <p>There are a total of 60 variable combinations that include our
 category of interest. Note that <code><a href="../reference/select_varid.html">select_varid()</a></code> also allows
 selections by including other <code>ccmugs</code> to be more specific.
@@ -697,8 +697,12 @@ Heat Production</em>.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'top'</span>, legend.direction <span class="op">=</span> <span class="st">'horizontal'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 rows containing missing values (`geom_point()`).</span></span></code></pre></div>
-<p><img src="api-use_files/figure-html/fig-energy-1.png" width="100%">
-## Duplicates</p>
+<p><img src="api-use_files/figure-html/fig-energy-1.png" width="100%"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="duplicates">Duplicates<a class="anchor" aria-label="anchor" href="#duplicates"></a>
+</h2>
 <p>There are several duplicate variable id’s in the UNFCCC DI (n = 360).
 Duplicated variables seem to only differ in one <em>ccmug</em> and have
 the identical number / string value. Duplicated variables are listed in
@@ -706,32 +710,24 @@ the identical number / string value. Duplicated variables are listed in
 <p>For example:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span><span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">variableId</span> <span class="op">==</span> <span class="va">rem</span><span class="op">$</span><span class="va">duplicate_variableIds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;      variableId categoryId classificationId measureId gasId unitId</span></span>
-<span><span class="co">#&gt; 1067     124008      10482            10510     10460 10471      5</span></span>
-<span><span class="co">#&gt; 1068     124008      10482            10510     19496 10471      5</span></span>
-<span><span class="co">#&gt; 8646     124008      10393            10510     10460 10471      5</span></span>
-<span><span class="co">#&gt; 8647     124008      10393            10510     19496 10471      5</span></span>
+<span><span class="co">#&gt;     variableId categoryId classificationId measureId gasId unitId</span></span>
+<span><span class="co">#&gt; 116      29537      10323            10510     10460 10471      5</span></span>
+<span><span class="co">#&gt; 117      29537      10323            10820     10460 10471      5</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/get_variables.html">get_variables</a></span><span class="op">(</span></span>
 <span>  <span class="va">rem</span>, </span>
 <span>  <span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span></span>
 <span>    <span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">variableId</span> <span class="op">==</span> <span class="va">rem</span><span class="op">$</span><span class="va">duplicate_variableIds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, </span>
 <span>    <span class="op">]</span><span class="op">$</span><span class="va">variableId</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   variableId                               categoryId   classificationId</span></span>
-<span><span class="co">#&gt; 1     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 2     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 3     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 4     124008 2.  Industrial Processes and Product Use Total for category</span></span>
+<span><span class="co">#&gt;   variableId                               categoryId</span></span>
+<span><span class="co">#&gt; 1      29537 4.C.2.c  Wetlands Converted to Grassland</span></span>
+<span><span class="co">#&gt; 2      29537 4.C.2.c  Wetlands Converted to Grassland</span></span>
+<span><span class="co">#&gt;                                                     classificationId</span></span>
+<span><span class="co">#&gt; 1                                                 Total for category</span></span>
+<span><span class="co">#&gt; 2 4 (III) Direct N2O Emissions from N Mineralization/ Immobilization</span></span>
 <span><span class="co">#&gt;                measureId gasId unitId reporting</span></span>
 <span><span class="co">#&gt; 1 Net emissions/removals   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 2              Emissions   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 3 Net emissions/removals   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 4              Emissions   N₂O     kt  annexOne</span></span></code></pre></div>
-<p>In case of duplicate variables, all data is downloaded. AFAIK
-numbrevalues are identical for duplicated variables, just differ in
-one/more ccmug id’s. Check and clean data afterwards to only include
-wanted obs.. Will develop function ..</p>
-</div>
+<span><span class="co">#&gt; 2 Net emissions/removals   N₂O     kt  annexOne</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="meta-overview">Meta Overview<a class="anchor" aria-label="anchor" href="#meta-overview"></a>
