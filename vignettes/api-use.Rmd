@@ -316,6 +316,8 @@ cat1A1a_agg_ghg %>%
 
 
 ```
+  
+
 ## Duplicates
 
 There are several duplicate variable id's in the UNFCCC DI (n = `r length(rem$duplicate_variableIds)`). 
@@ -335,10 +337,7 @@ get_variables(
 
 
 ```
-In case of duplicate variables, all data is downloaded. 
-AFAIK numbrevalues are identical for duplicated variables, just differ in one/more ccmug id's.
-Check and clean data afterwards to only include wanted obs..
-Will develop function ..
+
 
 ## Meta Overview
 
