@@ -140,7 +140,7 @@ make_idtbl <- function(nrow, depth){
 #'
 #' @return x with additional column `name`, or if nesting is only one level deep
 #'  (i.e., `level_1`), the column is renamed
-#'  @noRd
+#' @noRd
 add_name_column <- function(x){
 
   if(ncol(x) == 2 & colnames(x)[2] == 'level_1'){
