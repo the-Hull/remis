@@ -14,10 +14,10 @@ Variables
 
 
 The corresponding steps for querying are then:
-Identify a party of interest in [rem_init()]$parties, and note whether it is Annex-One
+Identify a party of interest in rem_init()$parties, and note whether it is Annex-One
 or Non-Annex-One, and extract the id.
-Choose (a subset of) years based on the Annex-One or Non-Annex-One party in [rem_init()]$years.
-Select variables from [rem_init()]$variables based on based on the Annex-One or Non-Annex-One party.
+Choose (a subset of) years based on the Annex-One or Non-Annex-One party in rem_init()$years.
+Select variables from rem_init()$variables based on based on the Annex-One or Non-Annex-One party.
 A helper function select_varid() allows narrowing down based on reporting categories,
 classifications, measures, units and gasses (ccmug's).
 See select_varid() for more information.
@@ -39,10 +39,10 @@ Variables
 
 
 The corresponding steps for querying are then:
-Identify a party of interest in [rem_init()]$parties, and note whether it is Annex-One
+Identify a party of interest in rem_init()$parties, and note whether it is Annex-One
 or Non-Annex-One, and extract the id.
-Choose (a subset of) years based on the Annex-One or Non-Annex-One party in [rem_init()]$years.
-Select variables from [rem_init()]$variables based on based on the Annex-One or Non-Annex-One party.
+Choose (a subset of) years based on the Annex-One or Non-Annex-One party in rem_init()$years.
+Select variables from rem_init()$variables based on based on the Annex-One or Non-Annex-One party.
 A helper function select_varid() allows narrowing down based on reporting categories,
 classifications, measures, units and gasses (ccmug's).
 See select_varid() for more information.
@@ -110,10 +110,10 @@ The Flex Query API is made available in <code>remis</code> through <code>flex_qu
 Downloads require a combination of <code>id</code> values for:</p><ol><li><p>Parties</p></li>
 <li><p>Years</p></li>
 <li><p>Variables</p></li>
-</ol><p>The corresponding steps for querying are then:</p><ol><li><p>Identify a party of interest in <code>[rem_init()]$parties</code>, and note whether it is Annex-One
+</ol><p>The corresponding steps for querying are then:</p><ol><li><p>Identify a party of interest in <code><a href="rem_init.html">rem_init()</a></code><code>$parties</code>, and note whether it is Annex-One
 or Non-Annex-One, and extract the <code>id</code>.</p></li>
-<li><p>Choose (a subset of) years based on the Annex-One or Non-Annex-One party in <code>[rem_init()]$years</code>.</p></li>
-<li><p>Select variables from <code>[rem_init()]$variables</code> based on based on the Annex-One or Non-Annex-One party.
+<li><p>Choose (a subset of) years based on the Annex-One or Non-Annex-One party in <code><a href="rem_init.html">rem_init()</a></code><code>$years</code>.</p></li>
+<li><p>Select variables from <code><a href="rem_init.html">rem_init()</a></code><code>$variables</code> based on based on the Annex-One or Non-Annex-One party.
 A helper function <code><a href="select_varid.html">select_varid()</a></code> allows narrowing down based on reporting categories,
 classifications, measures, units and gasses (<em>ccmug</em>'s).
 See <code><a href="select_varid.html">select_varid()</a></code> for more information.
@@ -201,7 +201,7 @@ results as <code>number_value</code> or <code>string_value</code>.</p>
 <span class="r-in"><span><span class="va">var_id</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">cat1A1a_variables</span>,</span></span>
 <span class="r-in"><span>  <span class="va">classificationId</span> <span class="op">==</span> <span class="st">'Total for category'</span>,</span></span>
-<span class="r-in"><span>         <span class="va">gasId</span> <span class="op">==</span> <span class="st">'Aggregate GHGs'</span></span></span>
+<span class="r-in"><span>         <span class="va">measureId</span> <span class="op">==</span> <span class="st">'Aggregate GHGs'</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span><span class="op">$</span><span class="va">variableId</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># download data</span></span></span>
