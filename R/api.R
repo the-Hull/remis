@@ -116,10 +116,10 @@ rem_init <- function(base_url = meta$api_base_url){
 #'  3. Variables
 #'
 #'  The corresponding steps for querying are then:
-#'  1. Identify a party of interest in `[rem_init()]$parties`, and note whether it is Annex-One
+#'  1. Identify a party of interest in [`rem_init()`]`$parties`, and note whether it is Annex-One
 #'  or Non-Annex-One, and extract the `id`.
-#'  2. Choose (a subset of) years based on the Annex-One or Non-Annex-One party in `[rem_init()]$years`.
-#'  3. Select variables from `[rem_init()]$variables` based on based on the Annex-One or Non-Annex-One party.
+#'  2. Choose (a subset of) years based on the Annex-One or Non-Annex-One party in [`rem_init()`]`$years`.
+#'  3. Select variables from [`rem_init()`]`$variables` based on based on the Annex-One or Non-Annex-One party.
 #'  A helper function [`select_varid()`] allows narrowing down based on reporting categories,
 #'  classifications, measures, units and gasses (*ccmug*'s).
 #'  See [`select_varid()`] for more information.
@@ -330,8 +330,8 @@ parse_raw <- function(rms, raw){
 #' @param classification_id numeric,
 #' @param measure_id numeric,
 #' @param gas_id numeric,
-#' @param unit_id numeric, ids from `[rem_init()]$` `categories`, `classification`,
-#' `measures`, `gas`, `units`.
+#' @param unit_id numeric, ids from [`rem_init()`] `$categories`, `$classification`,
+#' `$measures`, `$gas`, `$units`.
 #' @param union logical, for `TRUE` only return variables where **all** supplied ccmug's are represented,
 #'   for `FALSE` return every variable where any of the ccmug's is present.
 #'
@@ -495,7 +495,7 @@ get_names <- function(rms, ids){
 #' Extract ccmgu information based on variableId
 #'
 #' @param rms list, `remis` object
-#' @param variable_id numeric, `annexOne` or `nonAnnexOne` `variableId`s from `[rem_init()]$variables`
+#' @param variable_id numeric, `annexOne` or `nonAnnexOne` `variableId`s from [`rem_init()`]`$variables`
 #'
 #' @export
 #'

@@ -25,8 +25,8 @@ select_varid(
 
 \item{gas_id}{numeric,}
 
-\item{unit_id}{numeric, ids from \verb{[rem_init()]$} \code{categories}, \code{classification},
-\code{measures}, \code{gas}, \code{units}.}
+\item{unit_id}{numeric, ids from \code{\link[=rem_init]{rem_init()}} \verb{$categories}, \verb{$classification},
+\verb{$measures}, \verb{$gas}, \verb{$units}.}
 
 \item{union}{logical, for \code{TRUE} only return variables where \strong{all} supplied ccmug's are represented,
 for \code{FALSE} return every variable where any of the ccmug's is present.}

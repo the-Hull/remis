@@ -50,10 +50,10 @@ Downloads require a combination of \code{id} values for:
 
 The corresponding steps for querying are then:
 \enumerate{
-\item Identify a party of interest in \verb{[rem_init()]$parties}, and note whether it is Annex-One
+\item Identify a party of interest in \code{\link[=rem_init]{rem_init()}}\verb{$parties}, and note whether it is Annex-One
 or Non-Annex-One, and extract the \code{id}.
-\item Choose (a subset of) years based on the Annex-One or Non-Annex-One party in \verb{[rem_init()]$years}.
-\item Select variables from \verb{[rem_init()]$variables} based on based on the Annex-One or Non-Annex-One party.
+\item Choose (a subset of) years based on the Annex-One or Non-Annex-One party in \code{\link[=rem_init]{rem_init()}}\verb{$years}.
+\item Select variables from \code{\link[=rem_init]{rem_init()}}\verb{$variables} based on based on the Annex-One or Non-Annex-One party.
 A helper function \code{\link[=select_varid]{select_varid()}} allows narrowing down based on reporting categories,
 classifications, measures, units and gasses (\emph{ccmug}'s).
 See \code{\link[=select_varid]{select_varid()}} for more information.

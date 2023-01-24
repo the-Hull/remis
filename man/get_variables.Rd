@@ -9,7 +9,7 @@ get_variables(rms, variable_id)
 \arguments{
 \item{rms}{list, \code{remis} object}
 
-\item{variable_id}{numeric, \code{annexOne} or \code{nonAnnexOne} \code{variableId}s from \verb{[rem_init()]$variables}}
+\item{variable_id}{numeric, \code{annexOne} or \code{nonAnnexOne} \code{variableId}s from \code{\link[=rem_init]{rem_init()}}\verb{$variables}}
 }
 \value{
 data.frame containing variableId and text description of each
