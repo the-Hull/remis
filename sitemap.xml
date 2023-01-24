@@ -22,25 +22,7 @@
     <loc>https://the-hull.github.io/remis/reference/add_name_column.html</loc>
   </url>
   <url>
-    <loc>https://the-hull.github.io/remis/reference/find_id.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/flatten_dims.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/flatten_json.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/flatten_parties.html</loc>
-  </url>
-  <url>
     <loc>https://the-hull.github.io/remis/reference/flex_query.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/get_names.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/get_parse.html</loc>
   </url>
   <url>
     <loc>https://the-hull.github.io/remis/reference/get_variables.html</loc>
@@ -49,16 +31,7 @@
     <loc>https://the-hull.github.io/remis/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://the-hull.github.io/remis/reference/make_idtbl.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/parse_raw.html</loc>
-  </url>
-  <url>
     <loc>https://the-hull.github.io/remis/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://the-hull.github.io/remis/reference/post_parse.html</loc>
   </url>
   <url>
     <loc>https://the-hull.github.io/remis/reference/rem_init.html</loc>
