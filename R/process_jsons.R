@@ -4,6 +4,7 @@
 #' @param parties
 #'
 #' @return data.frame of parties
+#' @noRd
 flatten_parties <- function(parties){
 
 
@@ -46,6 +47,7 @@ flatten_parties <- function(parties){
 #' @param x response
 #'
 #' @return tibble
+#' @noRd
 flatten_json <- function(x){
   # identify nested column
   nested_cols <- colnames(x)[sapply(x, is.list)]
@@ -73,7 +75,7 @@ flatten_json <- function(x){
 #' and `name`. `id` is the DI API id, values in `level_x` are the corresponding name
 #' for the id, or its parent, and name is the id's name.
 #' @export
-#'
+#' @noRd
 flatten_dims <- function(x, depth = 1){
 
   nr <- length(x[['id']])
@@ -114,6 +116,7 @@ flatten_dims <- function(x, depth = 1){
 #' @return tibble with columns `id`, `level_x`, with x reflecting the nestedness,
 #' and `name`. `id` is the DI API id, values in `level_x` are the corresponding name
 #' for the id, or its parent, and name is the id's name.
+#' @noRd
 make_idtbl <- function(nrow, depth){
 
   out <- tibble::as_tibble(
@@ -137,6 +140,7 @@ make_idtbl <- function(nrow, depth){
 #'
 #' @return x with additional column `name`, or if nesting is only one level deep
 #'  (i.e., `level_1`), the column is renamed
+#'  @noRd
 add_name_column <- function(x){
 
   if(ncol(x) == 2 & colnames(x)[2] == 'level_1'){

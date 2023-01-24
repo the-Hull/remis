@@ -12,6 +12,7 @@ add_name_column(x)
 \value{
 x with additional column \code{name}, or if nesting is only one level deep
 (i.e., \code{level_1}), the column is renamed
+@noRd
 }
 \description{
 Add 'name' column to unnested tables

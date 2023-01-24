@@ -237,7 +237,7 @@ flex_query <- function(rms, variable_ids, party_ids, year_ids, path = 'api/recor
 #' @param url character, api path for desired object
 #'
 #' @return list, parsed from json
-#'
+#' @noRd
 get_parse <- function(rms, url){
 
   obj <- rms$get(url)
@@ -260,7 +260,7 @@ get_parse <- function(rms, url){
 #' descriptions instead of ids?
 #'
 #' @return data.frame, parsed from json
-#'
+#' @noRd
 post_parse <- function(rms, path = 'api/records/flexible-queries/', body, pretty = TRUE){
 
   # check if query is empty warn for large (!) download
@@ -297,6 +297,7 @@ post_parse <- function(rms, path = 'api/records/flexible-queries/', body, pretty
 #' @param raw list, response from POST request
 #'
 #' @return data.frame
+#' @noRd
 parse_raw <- function(rms, raw){
 
   # get parties
@@ -421,6 +422,7 @@ select_varid <- function(
 #' @param id integer
 #'
 #' @return character, name corresponding to id
+#' @noRd
 find_id <- function(rms, id, verbose = FALSE){
   # ensure that match is only length one
 
@@ -470,6 +472,7 @@ find_id <- function(rms, id, verbose = FALSE){
 #' @param ids
 #'
 #' @return character, names corresponding to `ids`
+#' @noRd
 get_names <- function(rms, ids){
 
 
