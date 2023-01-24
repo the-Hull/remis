@@ -284,26 +284,26 @@ CRF-Category tree.</p>
 <span>  category_id <span class="op">=</span> <span class="va">category</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variables</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      variableId categoryId classificationId measureId gasId unitId</span></span>
-<span><span class="co">#&gt; 1823     928586       9279            10525     10591 10469     28</span></span>
-<span><span class="co">#&gt; 2687     928524       9279            10520     10591 10469     28</span></span>
-<span><span class="co">#&gt; 2716     928580       9279            10513     10591 10469     28</span></span>
-<span><span class="co">#&gt; 2727     928626       9279            10524     10591 10469     28</span></span>
-<span><span class="co">#&gt; 2730     928544       9279            10528     10591 10469     28</span></span>
-<span><span class="co">#&gt; 3692      17578       9279            10510     10460 10468      5</span></span>
-<span><span class="co">#&gt; 3713     924766       9279            10525     10460 10468      5</span></span>
-<span><span class="co">#&gt; 3720     925785       9279            10530     10460 10471      5</span></span>
-<span><span class="co">#&gt; 4058     927111       9279            10528     10578 10637      7</span></span>
-<span><span class="co">#&gt; 4063     927327       9279            10524     10578 10637      7</span></span>
-<span><span class="co">#&gt; 4064     927370       9279            10513     10578 10637      7</span></span>
-<span><span class="co">#&gt; 4065     927427       9279            10520     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5169     926287       9279            10520     10460 10469      5</span></span>
-<span><span class="co">#&gt; 5182     924906       9279            10538     10460 10471      5</span></span>
-<span><span class="co">#&gt; 5192     926628       9279            10525     10460 10469      5</span></span>
-<span><span class="co">#&gt; 5559     927247       9279            10510     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5560     927097       9279            10542     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5561     927130       9279            10530     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5564     927449       9279            10525     10578 10637      7</span></span>
-<span><span class="co">#&gt; 5565     927199       9279            10538     10578 10637      7</span></span></code></pre></div>
+<span><span class="co">#&gt; 4354     928586       9279            10525     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4390     928580       9279            10513     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4396     928626       9279            10524     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4398     928524       9279            10520     10591 10469     28</span></span>
+<span><span class="co">#&gt; 4399     928544       9279            10528     10591 10469     28</span></span>
+<span><span class="co">#&gt; 6386     927247       9279            10510     10578 10637      7</span></span>
+<span><span class="co">#&gt; 6387     927097       9279            10542     10578 10637      7</span></span>
+<span><span class="co">#&gt; 6388     927130       9279            10530     10578 10637      7</span></span>
+<span><span class="co">#&gt; 6390     927111       9279            10528     10578 10637      7</span></span>
+<span><span class="co">#&gt; 7441     927327       9279            10524     10578 10637      7</span></span>
+<span><span class="co">#&gt; 7442     927370       9279            10513     10578 10637      7</span></span>
+<span><span class="co">#&gt; 7443     927427       9279            10520     10578 10637      7</span></span>
+<span><span class="co">#&gt; 7445     927449       9279            10525     10578 10637      7</span></span>
+<span><span class="co">#&gt; 7446     927199       9279            10538     10578 10637      7</span></span>
+<span><span class="co">#&gt; 9261     924906       9279            10538     10460 10471      5</span></span>
+<span><span class="co">#&gt; 9275     926278       9279            10528     10460 10468      5</span></span>
+<span><span class="co">#&gt; 9284     926628       9279            10525     10460 10469      5</span></span>
+<span><span class="co">#&gt; 9296      17578       9279            10510     10460 10468      5</span></span>
+<span><span class="co">#&gt; 9323     924766       9279            10525     10460 10468      5</span></span>
+<span><span class="co">#&gt; 9326     926287       9279            10520     10460 10469      5</span></span></code></pre></div>
 <p>There are a total of 60 variable combinations that include our
 category of interest. Note that <code><a href="../reference/select_varid.html">select_varid()</a></code> also allows
 selections by including other <code>ccmugs</code> to be more specific.
@@ -710,27 +710,21 @@ the identical number / string value. Duplicated variables are listed in
 <p>For example:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span><span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">variableId</span> <span class="op">==</span> <span class="va">rem</span><span class="op">$</span><span class="va">duplicate_variableIds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;      variableId categoryId classificationId measureId gasId unitId</span></span>
-<span><span class="co">#&gt; 389      124008      10482            10510     10460 10471      5</span></span>
-<span><span class="co">#&gt; 390      124008      10482            10510     19496 10471      5</span></span>
-<span><span class="co">#&gt; 7169     124008      10393            10510     10460 10471      5</span></span>
-<span><span class="co">#&gt; 7170     124008      10393            10510     19496 10471      5</span></span>
+<span><span class="co">#&gt;     variableId categoryId classificationId measureId gasId unitId</span></span>
+<span><span class="co">#&gt; 519     161997       8234            10510     10460 10469      5</span></span>
+<span><span class="co">#&gt; 520     161997       8234            10827     10460 10469      5</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/get_variables.html">get_variables</a></span><span class="op">(</span></span>
 <span>  <span class="va">rem</span>, </span>
 <span>  <span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">[</span></span>
 <span>    <span class="va">rem</span><span class="op">$</span><span class="va">variables</span><span class="op">$</span><span class="va">annexOne</span><span class="op">$</span><span class="va">variableId</span> <span class="op">==</span> <span class="va">rem</span><span class="op">$</span><span class="va">duplicate_variableIds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, </span>
 <span>    <span class="op">]</span><span class="op">$</span><span class="va">variableId</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   variableId                               categoryId   classificationId</span></span>
-<span><span class="co">#&gt; 1     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 2     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 3     124008 2.  Industrial Processes and Product Use Total for category</span></span>
-<span><span class="co">#&gt; 4     124008 2.  Industrial Processes and Product Use Total for category</span></span>
+<span><span class="co">#&gt;   variableId                                categoryId    classificationId</span></span>
+<span><span class="co">#&gt; 1     161997 4.F.2.b  Cropland Converted to Other Land  Total for category</span></span>
+<span><span class="co">#&gt; 2     161997 4.F.2.b  Cropland Converted to Other Land Carbon stock change</span></span>
 <span><span class="co">#&gt;                measureId gasId unitId reporting</span></span>
-<span><span class="co">#&gt; 1 Net emissions/removals   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 2              Emissions   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 3 Net emissions/removals   N₂O     kt  annexOne</span></span>
-<span><span class="co">#&gt; 4              Emissions   N₂O     kt  annexOne</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 Net emissions/removals   CO₂     kt  annexOne</span></span>
+<span><span class="co">#&gt; 2 Net emissions/removals   CO₂     kt  annexOne</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="meta-overview">Meta Overview<a class="anchor" aria-label="anchor" href="#meta-overview"></a>
