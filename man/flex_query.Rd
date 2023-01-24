@@ -84,7 +84,7 @@ cat1A1a_variables <- get_variables(
 var_id <-
   subset(cat1A1a_variables,
   classificationId == 'Total for category',
-         gasId == 'Aggregate GHGs'
+         measureId == 'Aggregate GHGs'
   )$variableId
 
 # download data

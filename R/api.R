@@ -161,7 +161,7 @@ rem_init <- function(base_url = meta$api_base_url){
 #' var_id <-
 #'   subset(cat1A1a_variables,
 #'   classificationId == 'Total for category',
-#'          gasId == 'Aggregate GHGs'
+#'          measureId == 'Aggregate GHGs'
 #'   )$variableId
 #'
 #' # download data
